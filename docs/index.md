@@ -2,11 +2,11 @@
 layout: home
 
 hero:
-  name: "LaunchPad"
-  text: "Enterprise CMS Fullstack"
-  tagline: "Strapi 5 + Next.js — Headless CMS sẵn sàng cho Production trong vài phút."
+  name: 'LaunchPad'
+  text: 'Enterprise CMS Fullstack'
+  tagline: 'Strapi 5 + Next.js — Headless CMS sẵn sàng cho Production trong vài phút.'
   image:
-    src: /logo.png
+    src: /logo.svg
     alt: LaunchPad Logo
   actions:
     - theme: brand
@@ -40,5 +40,22 @@ features:
   --vp-home-hero-name-background: linear-gradient(135deg, #646cff 0%, #9580ff 50%, #ff79c6 100%);
   --vp-home-hero-image-background-image: linear-gradient(135deg, #646cff22 0%, #9580ff22 100%);
   --vp-home-hero-image-filter: blur(44px);
+}
+
+/* Hiệu ứng tên lửa lơ lửng phóng lên */
+@keyframes floatUp {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-50px); }
+  100% { transform: translateY(0px); }
+}
+
+.VPImage.image-src {
+  top: 70px;
+  position: relative;
+  left: auto;
+  right: auto;
+  animation: floatUp 4s ease-in-out infinite;
+  /* Thêm chút shadow mờ cho xịn */
+  filter: drop-shadow(0 10px 20px rgba(149, 128, 255, 0.2));
 }
 </style>

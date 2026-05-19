@@ -13,7 +13,7 @@ export default defineConfig({
     'Tài liệu hướng dẫn đầy đủ cho LaunchPad CMS Fullstack — Headless CMS Enterprise với Strapi 5 + Next.js.',
 
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
     ['meta', { name: 'theme-color', content: '#646cff' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'LaunchPad Docs' }],
@@ -28,7 +28,7 @@ export default defineConfig({
 
   // ─── Theme Config ─────────────────────────────────────────────────────────
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
     siteTitle: 'LaunchPad',
 
     // Navigation top bar
