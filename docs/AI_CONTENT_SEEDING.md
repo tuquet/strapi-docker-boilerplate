@@ -6,10 +6,11 @@ Tài liệu này hướng dẫn cách **thay thế toàn bộ nội dung CMS** b
 
 ## 📋 Tổng Quan Hệ Thống
 
-Hệ thống Seeder (phiên bản hybrid CSV+JSON) hỗ trợ **11/12 loại dữ liệu**, được seed theo đúng thứ tự phụ thuộc để đảm bảo tính toàn vẹn của dữ liệu:
+Hệ thống Seeder (phiên bản hybrid CSV+JSON) hỗ trợ **12/12 loại dữ liệu**, được seed theo đúng thứ tự phụ thuộc để đảm bảo tính toàn vẹn của dữ liệu:
 
 | Phase | Loại | Format | Mô tả |
 |:------|:-----|:-------|:------|
+| **Phase 0** | Logos | CSV | Logo entities (image field required — seed đầu tiên) |
 | **Phase 1** | Collection Types | CSV | Categories, Products, Plans, FAQs, Testimonials, Articles |
 | **Phase 2** | Single Types | JSON | Global (Navbar/Footer), Blog-page, Product-page |
 | **Phase 3** | Pages + Dynamic Zones | JSON | Homepage layout với Hero, Features, Pricing, FAQ sections |
@@ -20,6 +21,7 @@ Hệ thống Seeder (phiên bản hybrid CSV+JSON) hỗ trợ **11/12 loại d�
 strapi/scripts/
 ├── seed-from-csv.mjs           # Script chính (Node.js)
 └── seed-data/
+    ├── 00_logos.csv             # Phase 0: Logo entities (image required)
     ├── 01_categories.csv        # Phase 1: Collection Types
     ├── 02_products.csv
     ├── 03_plans.csv
@@ -36,6 +38,14 @@ strapi/scripts/
         └── articles.json        #   → Blocks content cho mỗi article
 ```
 
+> [!NOTE]
+> **SEED_STATIC_DIR** (mặc định: `strapi/public/uploads/`) là thư mục chứa ảnh local để seed.
+> Có thể override bằng biến môi trường trong `strapi/.env`.
+> Các cột `image_url` / `image_src` trong CSV chấp nhận:
+> - **HTTPS URL**: `https://images.unsplash.com/photo.jpg`
+> - **Filename**: `logo.png` → tìm trong `SEED_STATIC_DIR`
+> - **Relative path**: `assets/logo.png` → resolve từ thư mục chạy script
+
 ---
 
 ## 🎯 3 Bước Thực Hiện
@@ -47,11 +57,12 @@ Yêu cầu AI (ChatGPT/Claude) tạo nội dung theo template CSV có sẵn. Cá
 
 | File | Cột | Ghi chú |
 |:-----|:----|:--------|
+| `00_logos.csv` | `company, image_src` | `image_src`: HTTPS URL hoặc filename/path local |
 | `01_categories.csv` | `name, locale` | Locale: `en` hoặc `vi` |
-| `02_products.csv` | `name, slug, description, price, featured, category_name, image_url, perks, locale` | `perks`: phân tách bởi `\|` |
+| `02_products.csv` | `name, slug, description, price, featured, category_name, image_url, perks, locale` | `image_url`: HTTPS URL hoặc filename local |
 | `03_plans.csv` | `name, price, sub_text, featured, cta_label, cta_url, cta_variant, product_name, perks, additional_perks, locale` | `product_name` phải khớp tên trong `02_products.csv` |
 | `04_faqs.csv` | `question, answer, locale` | |
-| `05_testimonials.csv` | `text, user_name, user_title, user_avatar_url, locale` | `user_avatar_url` placeholder |
+| `05_testimonials.csv` | `text, user_name, user_title, user_avatar_url, locale` | `user_avatar_url`: HTTPS URL hoặc filename local |
 | `06_articles.csv` | `title, slug, description, category_name, image_url, locale, published` | `published`: `true`/`false` |
 
 #### JSON cho Single Types & Pages (nested data)
@@ -127,21 +138,65 @@ Script sử dụng hàm `findExisting()` để kiểm tra entity đã tồn tạ
 ### 5. Cleanup Mode (`--clean`)
 Flag `--clean` thực hiện quy trình tự động xóa sạch toàn bộ Collection Types theo thứ tự **ngược phụ thuộc** để tránh lỗi Foreign Key Constraint:
 ```
-Pages → Articles → Plans → Products → Testimonials → FAQs → Categories
+Pages → Articles → Plans → Products → Testimonials → FAQs → Categories → Logos
 ```
+
+### 6. Image Seeding Canonical
+`resolveImage()` là hàm core xử lý ảnh thống nhất:
+- **HTTPS URL** → fetch từ internet
+- **Local path/filename** → đọc từ `SEED_STATIC_DIR` (mặc định `strapi/public/uploads/`)
+- **MIME type chính xác** → map extension `.jpg/.png/.webp/.svg` → đúng Content-Type
+- **Idempotency** → check Media Library trước khi upload, tránh tạo file trùng lặp
 
 ---
 
-## 📸 Q&A: Vấn đề xử lý Hình Ảnh (Image Upload)
+## 📸 Xử Lý Hình Ảnh — Image Seeding Canonical
 
-**Q: Cột `image_url` trong CSV có tự động hiển thị trên website không?**
-**A:** KHÔNG. Cột `image_url` hiện tại chỉ mang tính chất *tham khảo*. Strapi yêu cầu hình ảnh phải được lưu trữ dưới dạng File Entity (Media Library) và cấp `documentId` riêng.
+Script sử dụng hàm `resolveImage()` để seed ảnh một cách **canonical** vào Strapi Media Library, hỗ trợ cả hai nguồn:
 
-**Q: Cách giải quyết?**
-**A:**
-1. **Fallback UI**: Cấu hình Frontend render ảnh placeholder khi không có ảnh từ API.
-2. **Upload thủ công**: Vào Strapi Admin > Media Library > upload ảnh và gán vào bài viết/sản phẩm (đặc biệt bắt buộc đối với `Logo` vì đây là trường Media required).
-3. **External URL**: Đổi field `image` trong schema từ kiểu Media sang String, dùng URL trực tiếp (và cấu hình `remotePatterns` trong `next.config.mjs` của Next.js).
+### Nguồn ảnh được hỗ trợ
+
+| Loại | Ví dụ giá trị CSV | Hành vi |
+|:-----|:-----------------|:--------|
+| **HTTPS URL** | `https://images.unsplash.com/photo.jpg` | Download từ internet, upload lên Strapi |
+| **Filename** | `logo.png` | Tìm trong `SEED_STATIC_DIR` (default: `strapi/public/uploads/`) |
+| **Relative path** | `assets/logo.png` | Resolve từ thư mục chạy script |
+| **Absolute path** | `/data/images/logo.png` | Đọc trực tiếp từ đường dẫn |
+
+### Luồng xử lý
+
+```
+image_url / image_src (CSV)
+       │
+       ▼
+  resolveImage(src, name)
+       │
+       ├─ Detect type
+       │   ├── "https://" → fetch remote
+       │   └── filename/path → read local file
+       │
+       ▼
+  findExistingMedia(safeName)   ← Idempotency check
+       │
+       ├── Found  → return existing.id  [SKIP UPLOAD]
+       │
+       └── Not found → multipart upload → /api/upload
+                             │
+                             ▼
+                    return uploaded.id  [CREATE]
+```
+
+### Idempotency — Không duplicate ảnh
+Mỗi lần chạy, `resolveImage()` kiểm tra `GET /api/upload/files?filters[name][$eq]=safeName` trước khi upload. Nếu ảnh đã tồn tại trong Media Library, script **skip upload** và tái sử dụng ID hiện có.
+
+### Cấu hình thư mục ảnh local
+
+Thêm vào `strapi/.env` nếu muốn trỏ đến thư mục khác:
+```env
+# Mặc định: strapi/public/uploads/
+SEED_STATIC_DIR=/path/to/your/custom/seed-images
+```
+
 
 ---
 

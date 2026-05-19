@@ -1,0 +1,15 @@
+{
+  "name": "launchpad-docs",
+  "version": "1.0.0",
+  "description": "VitePress documentation site for LaunchPad CMS Fullstack",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4"
+  },
+  "packageManager": "yarn@4.5.0"
+}

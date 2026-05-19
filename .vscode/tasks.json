@@ -72,6 +72,20 @@
       }
     },
     {
+      "label": "📖 docs: dev",
+      "type": "shell",
+      "command": "yarn docs:dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": [],
+      "icon": {
+        "id": "book",
+        "color": "terminal.ansiMagenta"
+      }
+    },
+    {
       "label": "🧹 cms: clean",
       "type": "shell",
       "command": "npx kill-port 3000 1337 && yarn clean && npx rimraf next/.next/dev/lock && yarn dev",

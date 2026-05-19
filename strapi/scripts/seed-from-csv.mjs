@@ -5,11 +5,12 @@
  * theo đúng thứ tự phụ thuộc (dependency order).
  *
  * Hỗ trợ:
- *   - Collection Types (CSV): Categories, Products, Plans, FAQs, Testimonials, Articles
+ *   - Collection Types (CSV): Logos, Categories, Products, Plans, FAQs, Testimonials, Articles
  *   - Single Types (JSON): Global, Blog-page, Product-page
  *   - Pages + Dynamic Zones (JSON): Homepage
  *   - Article Blocks content (JSON)
- *   - Image upload từ URL
+ *   - Image seeding từ HTTPS URL hoặc Local Static Path (SEED_STATIC_DIR)
+ *   - Media Library idempotency (không upload duplicate)
  *   - Idempotency (check-and-skip by slug/name)
  *   - Cleanup mode (--clean)
  *   - Auto-publish cho draft-enabled types
@@ -23,6 +24,13 @@
  *   - Strapi đang chạy (mặc định http://localhost:1337)
  *   - File strapi/.env có STRAPI_ADMIN_TOKEN (Full-access API Token)
  *   - Cài thư viện: yarn add csv-parse
+ *
+ * Cấu hình ảnh local (tuỳ chọn):
+ *   - SEED_STATIC_DIR: thư mục chứa ảnh static để seed (default: strapi/public/uploads/)
+ *   - Trong CSV, cột image_url/image_src chấp nhận:
+ *       → HTTPS URL  : "https://images.unsplash.com/photo.jpg"
+ *       → Filename   : "logo.png"          (tìm trong SEED_STATIC_DIR)
+ *       → Rel. path  : "assets/logo.png"   (resolve từ CWD)
  * ──────────────────────────────────────────────────────────────────────────────
  */
 
@@ -56,6 +64,11 @@ const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
 const API_TOKEN = process.env.STRAPI_ADMIN_TOKEN;
 const SEED_DIR = path.join(__dirname, 'seed-data');
 const DEFAULT_LOCALE = 'en';
+
+// Thư mục chứa ảnh static local để seed.
+// Mặc định: strapi/public/uploads/ — override bằng SEED_STATIC_DIR env var.
+const STATIC_DIR = process.env.SEED_STATIC_DIR
+  || path.join(__dirname, '..', 'public', 'uploads');
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 
@@ -179,22 +192,108 @@ const cleanEndpoint = async (endpoint) => {
   log.clean(endpoint, items.length);
 };
 
-/** Upload image từ URL lên Strapi Media Library */
-const uploadImageFromUrl = async (imageUrl, filename) => {
-  if (FLAG_DRY_RUN) return 0;
-  if (!imageUrl) return null;
+/** Map file extension → MIME type chính xác */
+const getMimeType = (ext) => ({
+  '.jpg':  'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png':  'image/png',
+  '.webp': 'image/webp',
+  '.gif':  'image/gif',
+  '.svg':  'image/svg+xml',
+}[ext.toLowerCase()] ?? 'application/octet-stream');
+
+/**
+ * Idempotency check cho Strapi Media Library.
+ * Strapi lưu file với tên dạng "safeName" — nếu đã tồn tại, skip upload.
+ * Lưu ý: Strapi /api/upload/files trả về array trực tiếp, không wrap .data
+ */
+const findExistingMedia = async (filename) => {
+  if (FLAG_DRY_RUN) return null;
+  const url = `${STRAPI_URL}/api/upload/files?filters[name][$eq]=${encodeURIComponent(filename)}&pagination[pageSize]=1`;
   try {
-    const imgRes = await fetch(imageUrl);
-    if (!imgRes.ok) { log.skip(`Không tải được ảnh: ${imageUrl}`); return null; }
-    const buffer = Buffer.from(await imgRes.arrayBuffer());
-    const ext = path.extname(new URL(imageUrl).pathname) || '.jpg';
-    const safeName = (filename || 'image').replace(/[^a-zA-Z0-9-_]/g, '_') + ext;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${API_TOKEN}` } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    // Upload API trả về array trực tiếp (không phải { data: [] })
+    return Array.isArray(json) ? (json[0] ?? null) : null;
+  } catch {
+    return null;
+  }
+};
 
-    const boundary = '----FormBoundary' + Date.now();
-    const header = `--${boundary}\r\nContent-Disposition: form-data; name="files"; filename="${safeName}"\r\nContent-Type: image/jpeg\r\n\r\n`;
-    const footer = `\r\n--${boundary}--\r\n`;
-    const body = Buffer.concat([Buffer.from(header), buffer, Buffer.from(footer)]);
+/**
+ * Resolve & upload ảnh từ HTTPS URL hoặc local static path vào Strapi Media Library.
+ *
+ * @param {string} src  - HTTPS URL | filename ("logo.png") | relative/absolute path
+ * @param {string} name - Tên gợi ý để tạo safeName (dùng làm idempotency key)
+ * @returns {number|null} Strapi file ID (integer) để gán vào relation field
+ *
+ * Source types được hỗ trợ:
+ *   - Remote : "https://images.unsplash.com/photo.jpg"
+ *   - Filename: "logo.png"         → tìm trong STATIC_DIR
+ *   - Rel path: "assets/logo.png"  → resolve từ process.cwd()
+ *   - Abs path: "/data/logo.png"   → dùng trực tiếp
+ */
+const resolveImage = async (src, name) => {
+  if (FLAG_DRY_RUN) return 0;
+  if (!src) return null;
 
+  const isRemote = /^https?:\/\//i.test(src);
+
+  // ── 1. Xác định extension & safeName ──────────────────────────────────────
+  let ext = '';
+  let resolvedSrc = src;
+
+  if (isRemote) {
+    try {
+      ext = path.extname(new URL(src).pathname) || '.jpg';
+    } catch {
+      ext = '.jpg';
+    }
+  } else {
+    // Local: nếu không phải absolute path → thử resolve từ STATIC_DIR
+    if (!path.isAbsolute(src) && !fs.existsSync(src)) {
+      resolvedSrc = path.join(STATIC_DIR, path.basename(src));
+    }
+    ext = path.extname(resolvedSrc) || '.jpg';
+  }
+
+  const safeName = (name || 'image').replace(/[^a-zA-Z0-9-_]/g, '_') + ext;
+
+  // ── 2. Idempotency: skip nếu file đã tồn tại trong Media Library ──────────
+  const existing = await findExistingMedia(safeName);
+  if (existing) {
+    log.skip(`Ảnh đã có trong Media Library: ${safeName} (ID:${existing.id})`);
+    return existing.id;
+  }
+
+  // ── 3. Lấy buffer ─────────────────────────────────────────────────────────
+  let buffer;
+  if (isRemote) {
+    try {
+      const imgRes = await fetch(resolvedSrc);
+      if (!imgRes.ok) { log.skip(`Không tải được ảnh từ URL: ${resolvedSrc}`); return null; }
+      buffer = Buffer.from(await imgRes.arrayBuffer());
+    } catch (err) {
+      log.skip(`Lỗi fetch ảnh [${resolvedSrc}]: ${err.message}`);
+      return null;
+    }
+  } else {
+    if (!fs.existsSync(resolvedSrc)) {
+      log.skip(`File ảnh không tồn tại: ${resolvedSrc}`);
+      return null;
+    }
+    buffer = fs.readFileSync(resolvedSrc);
+  }
+
+  // ── 4. Upload lên Strapi Media Library ────────────────────────────────────
+  const mimeType = getMimeType(ext);
+  const boundary = '----FormBoundary' + Date.now();
+  const header = `--${boundary}\r\nContent-Disposition: form-data; name="files"; filename="${safeName}"\r\nContent-Type: ${mimeType}\r\n\r\n`;
+  const footer = `\r\n--${boundary}--\r\n`;
+  const body = Buffer.concat([Buffer.from(header), buffer, Buffer.from(footer)]);
+
+  try {
     const res = await fetch(`${STRAPI_URL}/api/upload`, {
       method: 'POST',
       headers: {
@@ -203,11 +302,22 @@ const uploadImageFromUrl = async (imageUrl, filename) => {
       },
       body,
     });
-    if (!res.ok) { log.skip(`Upload ảnh thất bại: ${safeName}`); return null; }
+    if (!res.ok) {
+      const errText = await res.text();
+      let errMsg = errText;
+      try { errMsg = JSON.parse(errText)?.error?.message || errText; } catch { /* */ }
+      log.skip(`Upload ảnh thất bại [${safeName}]: HTTP ${res.status} — ${errMsg.slice(0, 120)}`);
+      return null;
+    }
     const json = await res.json();
-    return json[0]?.id ?? null;
+    const uploaded = json[0];
+    if (uploaded) {
+      log.ok(uploaded.id, `📸 Uploaded: ${safeName}`);
+      return uploaded.id;
+    }
+    return null;
   } catch (err) {
-    log.skip(`Lỗi upload ảnh: ${err.message}`);
+    log.skip(`Lỗi upload ảnh [${safeName}]: ${err.message}`);
     return null;
   }
 };
@@ -223,6 +333,39 @@ const findExisting = async (endpoint, field, value) => {
 };
 
 // ─── SEEDERS ──────────────────────────────────────────────────────────────────
+
+/**
+ * Seed Logo entities từ 00_logos.csv.
+ * Logo có field `image` là required — nên chạy trước tất cả các seeder khác.
+ * Cột `image_src` chấp nhận: HTTPS URL, filename trong STATIC_DIR, hoặc path tuyệt đối.
+ */
+const seedLogos = async () => {
+  log.info('Seeding Logos...');
+  const rows = readCsv('00_logos.csv');
+  if (rows.length === 0) { log.skip('Bỏ qua: 00_logos.csv không có dữ liệu'); return; }
+  for (const row of rows) {
+    if (!row.company) { log.skip('Bỏ qua dòng Logo không có company'); continue; }
+    const existing = await findExisting('logos', 'company', row.company);
+    if (existing) { log.skip(`Logo đã tồn tại: ${row.company} (ID:${existing.id})`); continue; }
+
+    if (!row.image_src) {
+      log.skip(`Bỏ qua Logo "${row.company}" — thiếu image_src (required)`);
+      continue;
+    }
+
+    const imageId = await resolveImage(row.image_src, `logo-${row.company}`);
+    if (!imageId) {
+      log.skip(`Bỏ qua Logo "${row.company}" — không resolve được ảnh từ: ${row.image_src}`);
+      continue;
+    }
+
+    const created = await post('logos', {
+      company: row.company,
+      image: imageId,
+    });
+    if (created) log.ok(created.id, `Logo: ${row.company}`);
+  }
+};
 
 const seedCategories = async () => {
   log.info('Seeding Categories...');
@@ -257,7 +400,7 @@ const seedProducts = async (categoryMap) => {
 
     let imageId = null;
     if (row.image_url) {
-      imageId = await uploadImageFromUrl(row.image_url, `product-${row.slug || row.name}`);
+      imageId = await resolveImage(row.image_url, `product-${row.slug || row.name}`);
     }
 
     const payload = {
@@ -345,7 +488,7 @@ const seedTestimonials = async () => {
 
     let imageId = null;
     if (row.user_avatar_url) {
-      imageId = await uploadImageFromUrl(row.user_avatar_url, `avatar-${firstname}-${lastname}`);
+      imageId = await resolveImage(row.user_avatar_url, `avatar-${firstname}-${lastname}`);
     }
 
     const userPayload = { firstname, lastname, job: row.user_title || '' };
@@ -384,7 +527,7 @@ const seedArticles = async (categoryMap) => {
 
     let imageId = null;
     if (row.image_url) {
-      imageId = await uploadImageFromUrl(row.image_url, `article-${slug}`);
+      imageId = await resolveImage(row.image_url, `article-${slug}`);
     }
 
     const payload = {
@@ -491,8 +634,8 @@ const seedPages = async (planMap, testimonialMap, faqMap) => {
 
 const cleanAllData = async () => {
   log.section('🗑️  Cleanup Mode — Xóa toàn bộ data cũ...');
-  // Xóa theo thứ tự ngược phụ thuộc
-  const endpoints = ['pages', 'articles', 'plans', 'products', 'testimonials', 'faqs', 'categories'];
+  // Xóa theo thứ tự ngược phụ thuộc (logos sau cùng vì không có FK dependency)
+  const endpoints = ['pages', 'articles', 'plans', 'products', 'testimonials', 'faqs', 'categories', 'logos'];
   for (const ep of endpoints) {
     await cleanEndpoint(ep);
   }
@@ -530,6 +673,10 @@ const cleanAllData = async () => {
 
   // Cleanup nếu có flag
   if (FLAG_CLEAN) await cleanAllData();
+
+  // ── Phase 0: Logos (image required — phải seed trước) ───────────────────
+  log.section('Phase 0: Seed Logos (Local Static / Remote URL)');
+  await seedLogos();
 
   // ── Phase 1: Collection Types (CSV) ──────────────────────────────────────
   log.section('Phase 1: Seed Collection Types (CSV)');

@@ -24,7 +24,10 @@
     "lint-staged": "lint-staged",
     "clean": "npx rimraf next/.next next/.turbo strapi/dist",
     "clean:full": "yarn clean && npx rimraf node_modules next/node_modules strapi/node_modules",
-    "fix:lock": "npx rimraf next/.next/dev/lock"
+    "fix:lock": "npx rimraf next/.next/dev/lock",
+    "docs:dev": "cd docs && yarn dev",
+    "docs:build": "cd docs && yarn build",
+    "docs:preview": "cd docs && yarn preview"
   },
   "dependencies": {
     "@strapi/plugin-documentation": "^5.45.1",
