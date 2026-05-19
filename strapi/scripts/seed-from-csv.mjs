@@ -90,7 +90,7 @@ const readCsv = (filename) => {
     return [];
   }
   return parse(fs.readFileSync(filePath, 'utf-8'), {
-    columns: true, skip_empty_lines: true, trim: true, relax_quotes: true,
+    columns: true, skip_empty_lines: true, trim: true, relax_quotes: true, comment: '#'
   });
 };
 
