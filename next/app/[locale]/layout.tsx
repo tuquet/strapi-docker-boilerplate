@@ -5,17 +5,17 @@ import { draftMode } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 import React from 'react';
 
+import { SlugProvider } from '@/app/context/SlugContext';
 import { Banner } from '@/components/banner';
 import { DraftModeBanner } from '@/components/draft-mode-banner';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
-import { AIToast } from '@/components/toast';
+// import { AIToast } from '@/components/toast';
 import { CartProvider } from '@/context/cart-context';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchSingleType } from '@/lib/strapi';
 import { cn } from '@/lib/utils';
 import type { LocaleParamsProps } from '@/types/types';
-import { SlugProvider } from '@/app/context/SlugContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -58,7 +58,7 @@ export default async function LocaleLayout({
             <Navbar data={pageData.navbar} locale={locale} hasBanner={isDemo} />
             {children}
             <Footer data={pageData.footer} locale={locale} />
-            <AIToast />
+            {/* <AIToast /> */}
             {isDraftMode && <DraftModeBanner />}
           </div>
         </CartProvider>
