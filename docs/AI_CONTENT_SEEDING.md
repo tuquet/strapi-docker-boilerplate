@@ -88,7 +88,7 @@ File `blocks/articles.json` chứa nội dung Blocks cho từng bài viết, map
 1. Vào Strapi Admin (`http://localhost:1337/admin`) > **Settings** > **API Tokens**.
 2. Bấm **Create new token**, chọn Type là **Full access**.
 3. Mở file `strapi/.env` (tạo mới từ `strapi/.env.example` nếu chưa có), thêm dòng:
-   ```env
+```ini
    STRAPI_ADMIN_TOKEN=copy_token_cua_ban_vao_day
    ```
 
@@ -192,7 +192,7 @@ Mỗi lần chạy, `resolveImage()` kiểm tra `GET /api/upload/files?filters[n
 ### Cấu hình thư mục ảnh local
 
 Thêm vào `strapi/.env` nếu muốn trỏ đến thư mục khác:
-```env
+```ini
 # Mặc định: strapi/public/uploads/
 SEED_STATIC_DIR=/path/to/your/custom/seed-images
 ```

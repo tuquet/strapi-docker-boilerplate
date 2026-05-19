@@ -42,7 +42,7 @@ Dựa trên nhu cầu của đội ngũ, chúng ta có 2 mô hình phát triển
 
 **Cấu hình biến môi trường (`next/.env.local`):**
 Không cần định nghĩa `STRAPI_INTERNAL_URL`, hệ thống sẽ tự động sử dụng giá trị mặc định từ `NEXT_PUBLIC_API_URL`.
-```env
+```ini
 NEXT_PUBLIC_API_URL=http://localhost:1337
 ```
 
@@ -66,7 +66,7 @@ NEXT_PUBLIC_API_URL=http://localhost:1337
 Vì Next.js đang chạy trên máy cá nhân (ngoài Docker), hàm tải dữ liệu phía máy chủ (SSR) của Next.js không thể hiểu tên miền `strapi`. Do đó, bạn BẮT BUỘC phải ghi đè (override) `STRAPI_INTERNAL_URL` thành `localhost`.
 
 Tạo hoặc sửa file `next/.env.local` như sau:
-```env
+```ini
 # Dành cho trình duyệt (Client Components)
 NEXT_PUBLIC_API_URL=http://localhost:1337
 

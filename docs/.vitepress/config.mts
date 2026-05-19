@@ -5,6 +5,8 @@ export default defineConfig({
   // base: GitHub Pages host tại /<repo-name>/ → set VITEPRESS_BASE trong CI
   // Local dev không cần set (mặc định là "/")
   base: process.env.VITEPRESS_BASE ?? '/',
+  // Bỏ qua dead link check cho localhost (không resolve được trong CI)
+  ignoreDeadLinks: [/^https?:\/\/localhost/],
   lang: 'vi-VN',
   title: 'LaunchPad',
   description:
