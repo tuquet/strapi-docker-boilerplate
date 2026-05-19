@@ -1,0 +1,6 @@
+name,price,sub_text,featured,cta_label,cta_url,cta_variant,product_name,perks,additional_perks,locale
+"Starter",29,"mỗi tháng",false,"Dùng thử miễn phí","/dang-ky","outline","Analytics Pro","Tối đa 3 dashboard|100.000 sự kiện/tháng|Báo cáo cơ bản|Email hỗ trợ","",en
+"Professional",79,"mỗi tháng",true,"Bắt đầu ngay","/dang-ky-pro","primary","Analytics Pro","Không giới hạn dashboard|2 triệu sự kiện/tháng|Báo cáo nâng cao|Hỗ trợ ưu tiên|API access","Xuất dữ liệu tùy chỉnh",en
+"Enterprise",0,"Liên hệ báo giá",false,"Liên hệ Sales","/lien-he","muted","Analytics Pro","Không giới hạn mọi thứ|SLA 99.99% uptime|Dedicated account manager|On-premise deployment","SSO/SAML|Custom contract",en
+"Basic",19,"mỗi tháng",false,"Dùng thử 14 ngày","/dang-ky","outline","Marketing Hub","5.000 email/tháng|3 automation workflow|1 landing page","",en
+"Growth",59,"mỗi tháng",true,"Dùng thử 14 ngày","/dang-ky-growth","primary","Marketing Hub","50.000 email/tháng|Unlimited workflows|10 landing pages|A/B Testing","CRM sync",en

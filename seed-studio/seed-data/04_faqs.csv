@@ -1,0 +1,9 @@
+question,answer,locale
+"Tôi có thể hủy đăng ký bất cứ lúc nào không?","Có, bạn có thể hủy gói dịch vụ bất kỳ lúc nào. Chúng tôi không tính phí hủy hợp đồng. Tài khoản của bạn sẽ hoạt động đến hết chu kỳ thanh toán hiện tại.",vi
+"Dữ liệu của tôi có được bảo mật không?","Toàn bộ dữ liệu được mã hóa AES-256 khi lưu trữ và TLS 1.3 khi truyền tải. Chúng tôi tuân thủ các tiêu chuẩn bảo mật ISO 27001 và SOC 2 Type II.",vi
+"Tôi có thể thay đổi gói dịch vụ không?","Có, bạn có thể nâng cấp hoặc hạ cấp gói dịch vụ bất cứ lúc nào. Khi nâng cấp, phần chênh lệch sẽ được tính theo tỷ lệ ngày sử dụng còn lại trong tháng.",vi
+"Có hỗ trợ thanh toán bằng nhiều phương thức không?","Chúng tôi chấp nhận thẻ tín dụng/ghi nợ (Visa, Mastercard), PayPal, và chuyển khoản ngân hàng cho các gói Enterprise.",vi
+"Can I use the API with my existing systems?","Yes, our REST API and webhooks allow seamless integration with your existing tools. We also provide official SDKs for Python, JavaScript, and PHP.",en
+"What happens to my data if I cancel?","Your data remains accessible for 30 days after cancellation. You can export all your data in standard formats (CSV, JSON) at any time, even after cancellation.",en
+"Do you offer a free trial?","Yes, all plans include a 14-day free trial with full access to all features. No credit card required.",en
+"Is there a limit on the number of users per account?","The Starter plan supports up to 3 users, Professional up to 25 users, and Enterprise has unlimited users.",en

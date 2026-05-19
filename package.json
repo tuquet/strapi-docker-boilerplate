@@ -14,8 +14,8 @@
     "setup:seed": "cd strapi && yarn strapi import -f ./data/export_20250116105447.tar.gz --force",
     "seed:disable": "npx -y tsx scripts/toggle-seed.mts disable",
     "seed:enable": "npx -y tsx scripts/toggle-seed.mts enable",
-    "seed:ui:dev": "concurrently -n \"api,ui\" -c \"magenta,cyan\" \"yarn seed:ui\" \"cd seed-studio && yarn dev\"",
-    "seed:ui:build": "cd seed-studio && yarn build",
+    "seed:ui:dev": "concurrently -n \"api,ui\" -c \"magenta,cyan\" \"cd seed-studio && node server.mjs\" \"cd seed-studio && npm run dev\"",
+    "seed:ui:build": "cd seed-studio && npm run build",
     "setup": "yarn setup:env && yarn setup:deps && yarn setup:db && echo '\n--- Setup Completed! ---'",
     "dev": "concurrently -n \"strapi,next\" -c \"green,blue\" \"yarn strapi\" \"wait-on http://127.0.0.1:1337 && yarn next\"",
     "export": "cd strapi && yarn strapi export --no-encrypt -f ./data/export_20250116105447",
@@ -30,7 +30,7 @@
     "docs:dev": "cd docs && yarn dev",
     "docs:build": "cd docs && yarn build",
     "docs:preview": "cd docs && yarn preview",
-    "seed:ui": "cd strapi && node scripts/seed-studio/server.mjs"
+    "seed:ui": "cd seed-studio && node server.mjs"
   },
   "dependencies": {
     "@strapi/plugin-documentation": "^5.45.1",

@@ -18,7 +18,7 @@ Hệ thống Seeder (phiên bản hybrid CSV+JSON) hỗ trợ **12/12 loại d�
 ### Cấu trúc thư mục
 
 ```
-strapi/scripts/
+seed-studio/
 ├── seed-from-csv.mjs           # Script chính (Node.js)
 └── seed-data/
     ├── 00_logos.csv             # Phase 0: Logo entities (image required)
@@ -101,13 +101,13 @@ Mở terminal tại thư mục `strapi/` và chạy lệnh:
 yarn add csv-parse
 
 # Chạy seed bình thường (idempotent, không tạo duplicate)
-node scripts/seed-from-csv.mjs
+cd seed-studio && node seed-from-csv.mjs
 
 # Xóa toàn bộ data cũ trước khi seed lại từ đầu
-node scripts/seed-from-csv.mjs --clean
+cd seed-studio && node seed-from-csv.mjs --clean
 
 # Preview — in ra console dữ liệu sẽ tạo mà không gửi API
-node scripts/seed-from-csv.mjs --dry-run
+cd seed-studio && node seed-from-csv.mjs --dry-run
 ```
 
 ---

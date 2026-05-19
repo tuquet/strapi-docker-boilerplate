@@ -86,17 +86,17 @@
       }
     },
     {
-      "label": "🌱 seed: ui",
+      "label": "🌱 seed: studio",
       "type": "shell",
-      "command": "yarn seed:ui",
+      "command": "yarn seed:ui:dev",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated"
       },
       "problemMatcher": [],
       "icon": {
-        "id": "database",
-        "color": "terminal.ansiGreen"
+        "id": "code",
+        "color": "terminal.ansiCyan"
       }
     },
     {

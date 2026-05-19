@@ -68,7 +68,7 @@ const DEFAULT_LOCALE = 'en';
 // Thư mục chứa ảnh static local để seed.
 // Mặc định: strapi/public/uploads/ — override bằng SEED_STATIC_DIR env var.
 const STATIC_DIR = process.env.SEED_STATIC_DIR
-  || path.join(__dirname, '..', 'public', 'uploads');
+  || path.join(__dirname, '..', 'strapi', 'public', 'uploads');
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 

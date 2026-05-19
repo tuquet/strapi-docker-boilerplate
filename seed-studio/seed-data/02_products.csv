@@ -1,0 +1,4 @@
+name,slug,description,price,featured,category_name,image_url,perks,locale
+"Analytics Pro","analytics-pro","Nền tảng phân tích dữ liệu toàn diện giúp bạn đưa ra quyết định kinh doanh nhanh hơn và chính xác hơn.",299,true,"Technology","https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800","Báo cáo thời gian thực|Dashboard tùy chỉnh|Xuất dữ liệu CSV/PDF|API tích hợp",en
+"Marketing Hub","marketing-hub","Bộ công cụ marketing all-in-one dành cho doanh nghiệp tăng trưởng nhanh.",199,false,"Marketing","https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=800","Email automation|A/B Testing|Landing page builder|CRM tích hợp",en
+"Design Suite","design-suite","Công cụ thiết kế chuyên nghiệp dành cho team sáng tạo.",149,false,"Design","https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800","Thư viện 10.000+ asset|Xuất đa định dạng|Cộng tác nhóm thời gian thực",en
