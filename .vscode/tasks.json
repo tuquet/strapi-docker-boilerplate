@@ -86,6 +86,20 @@
       }
     },
     {
+      "label": "🌱 seed: ui",
+      "type": "shell",
+      "command": "yarn seed:ui",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": [],
+      "icon": {
+        "id": "database",
+        "color": "terminal.ansiGreen"
+      }
+    },
+    {
       "label": "🧹 cms: clean",
       "type": "shell",
       "command": "npx kill-port 3000 1337 && yarn clean && npx rimraf next/.next/dev/lock && yarn dev",

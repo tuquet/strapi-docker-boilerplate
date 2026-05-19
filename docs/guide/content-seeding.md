@@ -10,7 +10,26 @@ Tool này giúp bạn **nạp nội dung thật vào CMS tự động** — thay
 
 ---
 
-## Happy Path — Seed Xong Trong 5 Phút
+## 🚀 Cách Mới: Dùng Giao Diện (Seed Studio)
+
+Để quá trình seed trở nên trực quan và "fancy" hơn, LaunchPad cung cấp sẵn một công cụ giao diện là **Seed Studio**.
+
+1. Đảm bảo bạn đã cấu hình `STRAPI_ADMIN_TOKEN` trong file `strapi/.env`
+2. Mở terminal ở thư mục gốc và chạy:
+   ```bash
+   yarn seed:ui
+   ```
+   *(Hoặc ấn `Ctrl + Shift + P` > **Run Task** > chọn **`🌱 seed: ui`**)*
+3. Mở trình duyệt tại **http://localhost:4000**
+
+Tại Seed Studio, bạn có thể:
+- Xem Terminal Log chạy trực tiếp trên web (Pipeline Visualizer).
+- Chọn linh hoạt giữa các chế độ: Update, Wipe DB, hoặc Clean & Seed.
+- Nhập nhanh bài viết mới thông qua form trực quan (On-Demand Article) mà không cần chạm vào file CSV.
+
+---
+
+## 💻 Cách Cũ: Dùng CLI (Happy Path)
 
 ### Bước 1 — Nhờ AI tạo nội dung
 

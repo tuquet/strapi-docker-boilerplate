@@ -41,7 +41,14 @@ export default async function LocaleLayout({
 }: PropsWithChildren<LocaleParamsProps>) {
   const { isEnabled: isDraftMode } = await draftMode();
   const { locale } = await params;
-  const pageData = await fetchSingleType('global', { locale });
+  
+  let pageData = null;
+  try {
+    pageData = await fetchSingleType('global', { locale });
+  } catch (e) {
+    // Gracefully handle if global doesn't exist
+  }
+  
   const isDemo = process.env.NEXT_IS_DEMO === 'true';
 
   return (
@@ -55,9 +62,9 @@ export default async function LocaleLayout({
             )}
           >
             {isDemo && <Banner />}
-            <Navbar data={pageData.navbar} locale={locale} hasBanner={isDemo} />
+            <Navbar data={pageData?.navbar || null} locale={locale} hasBanner={isDemo} />
             {children}
-            <Footer data={pageData.footer} locale={locale} />
+            <Footer data={pageData?.footer || null} locale={locale} />
             {/* <AIToast /> */}
             {isDraftMode && <DraftModeBanner />}
           </div>

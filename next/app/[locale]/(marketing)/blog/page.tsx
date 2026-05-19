@@ -19,8 +19,8 @@ export async function generateMetadata({
   const { locale } = await params;
   const pageData = await fetchSingleType('blog-page', { locale });
 
-  const seo = pageData.seo;
-  const metadata = generateMetadataObject(seo);
+  const seo = pageData?.seo;
+  const metadata = seo ? generateMetadataObject(seo) : { title: 'Blog', description: 'Blog page' };
   return metadata;
 }
 
@@ -29,20 +29,35 @@ export default async function Blog({ params }: LocaleParamsProps) {
   const pageData = await fetchSingleType('blog-page', {
     locale: locale,
   });
-  const [firstArticle, ...articles] = await fetchCollectionType<Article[]>(
+  
+  const articlesResponse = await fetchCollectionType<Article[]>(
     'articles',
     {
       filters: { locale: { $eq: locale } },
     }
   );
+  
+  // Safe array destructuring with fallback to empty array if response is not array
+  const safeArticles = Array.isArray(articlesResponse) ? articlesResponse : [];
+  const [firstArticle, ...articles] = safeArticles;
 
-  const localizedSlugs = pageData.localizations.reduce(
+  const localizedSlugs = pageData?.localizations?.reduce(
     (acc: Record<string, string>, localization: any) => {
       acc[localization.locale] = 'blog';
       return acc;
     },
     { [locale]: 'blog' }
-  );
+  ) || { [locale]: 'blog' };
+
+  if (!pageData) {
+    return (
+      <div className="relative py-40 text-center flex flex-col justify-center items-center h-[50vh]">
+        <h1 className="text-2xl font-bold mb-4">Content Not Found</h1>
+        <p className="text-gray-500 mb-8">It looks like the blog page has not been set up in the CMS.</p>
+        <p className="text-brand">💡 Please run the AI Seeder to populate the database.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative overflow-hidden py-20 md:py-0">
@@ -61,13 +76,22 @@ export default async function Blog({ params }: LocaleParamsProps) {
           </Subheading>
         </div>
 
-        <BlogCard
-          article={firstArticle}
-          locale={locale}
-          key={firstArticle.title}
-        />
+        {firstArticle ? (
+          <BlogCard
+            article={firstArticle}
+            locale={locale}
+            key={firstArticle.id || firstArticle.title}
+          />
+        ) : (
+          <div className="w-full py-20 text-center border border-dashed border-gray-700 rounded-2xl bg-gray-900/20">
+            <h3 className="text-xl font-bold mb-2 text-gray-300">No articles found</h3>
+            <p className="text-gray-500">Run the LaunchPad Seed Studio to generate articles automatically.</p>
+          </div>
+        )}
 
-        <BlogPostRows articles={articles} locale={locale} />
+        {articles.length > 0 && (
+          <BlogPostRows articles={articles} locale={locale} />
+        )}
       </Container>
     </div>
   );

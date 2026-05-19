@@ -650,6 +650,7 @@ const cleanAllData = async () => {
   console.log(`📁 Seed Dir   : ${SEED_DIR}`);
   if (FLAG_DRY_RUN) console.log('🔍 Mode       : DRY-RUN (không gửi API)');
   if (FLAG_CLEAN) console.log('🗑️  Mode       : CLEAN (xóa data cũ trước)');
+  if (args.includes('--clean-only')) console.log('🗑️  Mode       : CLEAN ONLY (chỉ xóa data cũ)');
 
   if (!API_TOKEN) {
     console.error('\n❌ STRAPI_ADMIN_TOKEN chưa được cấu hình!');
@@ -672,7 +673,13 @@ const cleanAllData = async () => {
   }
 
   // Cleanup nếu có flag
-  if (FLAG_CLEAN) await cleanAllData();
+  if (FLAG_CLEAN || args.includes('--clean-only')) {
+    await cleanAllData();
+    if (args.includes('--clean-only')) {
+      console.log('✅ Clean Only hoàn tất. Thoát script.\n');
+      process.exit(0);
+    }
+  }
 
   // ── Phase 0: Logos (image required — phải seed trước) ───────────────────
   log.section('Phase 0: Seed Logos (Local Static / Remote URL)');
