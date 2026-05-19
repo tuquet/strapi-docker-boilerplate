@@ -15,6 +15,7 @@ import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchSingleType } from '@/lib/strapi';
 import { cn } from '@/lib/utils';
 import type { LocaleParamsProps } from '@/types/types';
+import { SlugProvider } from '@/app/context/SlugContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -45,21 +46,23 @@ export default async function LocaleLayout({
 
   return (
     <ViewTransitions>
-      <CartProvider>
-        <div
-          className={cn(
-            inter.className,
-            'bg-charcoal antialiased h-full w-full'
-          )}
-        >
-          {isDemo && <Banner />}
-          <Navbar data={pageData.navbar} locale={locale} hasBanner={isDemo} />
-          {children}
-          <Footer data={pageData.footer} locale={locale} />
-          <AIToast />
-          {isDraftMode && <DraftModeBanner />}
-        </div>
-      </CartProvider>
+      <SlugProvider>
+        <CartProvider>
+          <div
+            className={cn(
+              inter.className,
+              'bg-charcoal antialiased h-full w-full'
+            )}
+          >
+            {isDemo && <Banner />}
+            <Navbar data={pageData.navbar} locale={locale} hasBanner={isDemo} />
+            {children}
+            <Footer data={pageData.footer} locale={locale} />
+            <AIToast />
+            {isDraftMode && <DraftModeBanner />}
+          </div>
+        </CartProvider>
+      </SlugProvider>
     </ViewTransitions>
   );
 }

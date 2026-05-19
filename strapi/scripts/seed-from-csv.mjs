@@ -255,6 +255,11 @@ const seedProducts = async (categoryMap) => {
       log.skip(`Category "${row.category_name}" không tìm thấy`);
     }
 
+    let imageId = null;
+    if (row.image_url) {
+      imageId = await uploadImageFromUrl(row.image_url, `product-${row.slug || row.name}`);
+    }
+
     const payload = {
       name: row.name,
       slug: row.slug || row.name.toLowerCase().replace(/\s+/g, '-'),
@@ -266,6 +271,10 @@ const seedProducts = async (categoryMap) => {
       categories: categoryId ? [categoryId] : [],
       publishedAt: new Date().toISOString(),
     };
+
+    if (imageId) {
+      payload.images = [imageId];
+    }
 
     const created = await post('products', payload);
     if (created) { map[row.name] = created.id; log.ok(created.id, row.name); }
@@ -334,10 +343,20 @@ const seedTestimonials = async () => {
     const lastname = nameParts.pop() || '';
     const firstname = nameParts.join(' ') || lastname;
 
+    let imageId = null;
+    if (row.user_avatar_url) {
+      imageId = await uploadImageFromUrl(row.user_avatar_url, `avatar-${firstname}-${lastname}`);
+    }
+
+    const userPayload = { firstname, lastname, job: row.user_title || '' };
+    if (imageId) {
+      userPayload.image = imageId;
+    }
+
     const created = await post('testimonials', {
       text: row.text,
       locale: row.locale || DEFAULT_LOCALE,
-      user: { firstname, lastname, job: row.user_title || '' },
+      user: userPayload,
       publishedAt: new Date().toISOString(),
     });
     if (created) { map[row.user_name] = created.id; log.ok(created.id, row.user_name || '(no name)'); }
@@ -363,6 +382,11 @@ const seedArticles = async (categoryMap) => {
     // Tìm blocks content matching slug
     const articleBlocks = blocksData.find((b) => b.slug === slug);
 
+    let imageId = null;
+    if (row.image_url) {
+      imageId = await uploadImageFromUrl(row.image_url, `article-${slug}`);
+    }
+
     const payload = {
       title: row.title,
       slug,
@@ -375,6 +399,10 @@ const seedArticles = async (categoryMap) => {
         metaDescription: (row.description || row.title).slice(0, 160),
       },
     };
+
+    if (imageId) {
+      payload.image = imageId;
+    }
 
     // Gắn blocks content nếu có
     if (articleBlocks?.content) {

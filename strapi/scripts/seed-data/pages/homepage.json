@@ -1,6 +1,6 @@
 {
   "_comment": "Homepage — dynamic_zone relations (testimonials, faqs, plans) sẽ được inject tự động bởi seeder sau khi seed xong các collection type.",
-  "slug": "home",
+  "slug": "homepage",
   "seo": {
     "metaTitle": "LaunchPad — Modern SaaS for Growing Teams",
     "metaDescription": "LaunchPad helps businesses scale faster with analytics, marketing automation, and design tools. Start your free trial today."

@@ -1,0 +1,14 @@
+{
+  "slug": "privacy",
+  "seo": {
+    "metaTitle": "Privacy Policy — LaunchPad CMS",
+    "metaDescription": "Our privacy policy and data handling practices. Learn how we protect your personal information."
+  },
+  "dynamic_zone": [
+    {
+      "__component": "dynamic-zone.hero",
+      "heading": "Privacy Policy",
+      "sub_heading": "Last updated: May 2026. We take your privacy seriously."
+    }
+  ]
+}

@@ -5,7 +5,6 @@ import { i18n } from '@/i18n.config';
 
 import './globals.css';
 
-import { SlugProvider } from '@/app/context/SlugContext';
 import { Preview } from '@/components/preview';
 
 export const viewport: Viewport = {
@@ -36,9 +35,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Preview />
-        <SlugProvider>
           <Suspense fallback={<RootLoading />}>{children}</Suspense>
-        </SlugProvider>
       </body>
     </html>
   );

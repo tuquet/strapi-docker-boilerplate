@@ -1,0 +1,14 @@
+{
+  "slug": "terms",
+  "seo": {
+    "metaTitle": "Terms of Service — LaunchPad CMS",
+    "metaDescription": "Terms and conditions for using LaunchPad. Read carefully before using our services and products."
+  },
+  "dynamic_zone": [
+    {
+      "__component": "dynamic-zone.hero",
+      "heading": "Terms of Service",
+      "sub_heading": "Last updated: May 2026. Please read these terms carefully."
+    }
+  ]
+}
