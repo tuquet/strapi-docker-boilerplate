@@ -22,18 +22,18 @@ function createConnectionStore() {
   let strapiStatus = $state<StrapiStatus>('checking');
   let pollTimer: ReturnType<typeof setInterval> | null = null;
 
-  /** Persist token to localStorage whenever it changes */
-  $effect(() => {
+  /** Persist token to localStorage */
+  function saveToken(value: string) {
     try {
-      if (apiToken) {
-        localStorage.setItem(STORAGE_KEY, apiToken);
+      if (value) {
+        localStorage.setItem(STORAGE_KEY, value);
       } else {
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch {
-      // localStorage may be unavailable (SSR, private browsing, etc.)
+      // localStorage may be unavailable
     }
-  });
+  }
 
   async function checkConnection(): Promise<void> {
     strapiStatus = 'checking';
@@ -65,9 +65,7 @@ function createConnectionStore() {
   }
 
   function startPolling() {
-    // Initial check
     checkConnection();
-    // Recurring check every 30s
     pollTimer = setInterval(() => {
       checkConnection();
     }, CHECK_INTERVAL_MS);
@@ -91,6 +89,7 @@ function createConnectionStore() {
     },
     set apiToken(value: string) {
       apiToken = value;
+      saveToken(value);
     },
 
     get strapiStatus(): StrapiStatus {
