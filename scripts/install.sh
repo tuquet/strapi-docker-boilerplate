@@ -49,9 +49,15 @@ fi
 # 4. Nạp dữ liệu mẫu
 echo ""
 echo "📦 [4/4] Đang nạp dữ liệu mẫu (Bài viết, Cấu hình SEO...)"
-echo "⏳ Chờ 10 giây để Database khởi động hoàn tất trước khi bơm dữ liệu..."
-sleep 10
-docker compose exec strapi sh -c 'echo "y" | yarn strapi import -f ./data/export_20250116105447.tar.gz --force'
+echo "⏳ Chờ 15 giây để Database và Strapi khởi động hoàn tất trước khi bơm dữ liệu..."
+sleep 15
+if docker compose exec -T strapi sh -c 'yarn strapi import -f ./data/export_20250116105447.tar.gz --force'; then
+    echo "✅ Đã seed dữ liệu mẫu thành công!"
+    # Tắt chế độ seed sau khi hoàn thành để tránh ghi đè lần khởi động sau
+    bash scripts/toggle-seed.sh disable
+else
+    echo "⚠️ Cảnh báo: Không thể tự động nạp dữ liệu mẫu. Bạn có thể tự nạp lại sau bằng lệnh 'yarn setup:seed'."
+fi
 
 echo ""
 echo "================================================================="
