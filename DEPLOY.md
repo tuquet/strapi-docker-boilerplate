@@ -69,9 +69,13 @@ docker compose pull
 docker compose up -d
 ```
 
-### 3. Tắt chế độ Seed Data (Rất Quan Trọng)
+### 3. Tắt chế độ Seed Data _(Bảo mật & Tối ưu!)_
 
-Nếu biến `SEED_DATA=true` đang bật, hệ thống sẽ reset lại Database mỗi khi khởi động lại. Sau lần chạy đầu tiên thành công, bạn **BẮT BUỘC** phải tắt nó đi:
+> [!TIP]
+> **Cơ chế Bảo vệ Đa lớp Mới:**
+> Để tối ưu hóa trải nghiệm trải nghiệm chạy demo "One-time run" và chống mất mát dữ liệu:
+> - **Tự động Khóa (Lock Flag):** Sau khi nạp dữ liệu thành công lần đầu, container Strapi sẽ tự động lưu lại một flag `.seeded` trong thư mục lưu trữ persistent. Do đó, dù biến `SEED_DATA=true` có đang được cấu hình ở host, hệ thống sẽ tự động bỏ qua bước nạp ở các lần chạy sau, cam kết **không bao giờ ghi đè** hay xóa mất dữ liệu của bạn.
+> - **Khuyến nghị Tắt Biến Host:** Sau khi cài đặt hoàn tất, bạn vẫn nên tắt biến này ở phía host `.env` bằng script để tăng độ bảo mật và đẩy nhanh tốc độ khởi động của các container:
 
 ```bash
 chmod +x scripts/toggle-seed.sh

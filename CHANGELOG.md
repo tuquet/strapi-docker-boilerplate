@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Backup Restore**: Cho phép kích hoạt tiến trình `strapi import` trực tiếp từ Web UI. Sử dụng **Server-Sent Events (SSE)** thông qua API `/api/restore-stream` để stream logs real-time từ server về giao diện điều khiển.
   - **On-demand Article Seeding**: Bổ sung tính năng tạo nhanh một bài viết đơn lẻ (Single Article Seeding) trực tiếp từ giao diện GUI qua API `/api/seed-article`. Tiến trình tự động gọi API Strapi để khởi tạo thực thể và đồng thời append dữ liệu vào file dữ liệu nguồn CSV (`06_articles.csv`) để đảm bảo tính nhất quán của dữ liệu seed.
   - **Premium Web UI**: Thiết kế giao diện Seed Studio trực quan, hiện đại bằng **Svelte 5** (tận dụng hệ thống Runes nâng cao như `$state`, `$derived`, `$effect`), kết hợp các hiệu ứng chuyển đổi mượt mà, micro-animations và layout tối ưu cho trải nghiệm người dùng B2B SaaS.
+- **Automatic Safe Database Seeding (Trải nghiệm Demo mượt mà & Bảo mật)**:
+  - Tự động hóa quá trình nạp dữ liệu mẫu (`SEED_DATA=true`) trực tiếp trong `docker-entrypoint.sh` của container `strapi` ở lần đầu khởi chạy hệ thống.
+  - Tích hợp cơ chế chờ Database (Node network socket ping) sẵn sàng trước khi nạp dữ liệu, tránh tuyệt đối các lỗi crash/race-condition khi boot container đồng thời.
+  - Tạo file khóa thông minh `.seeded` trong persistent volume để tự động bỏ qua nạp dữ liệu ở các lần restart sau, ngăn chặn hoàn toàn việc ghi đè dữ liệu cá nhân của người dùng.
+  - Tối ưu trình cài đặt `scripts/install.sh` tự động vô hiệu hóa cờ seed trên host sau khi hoàn thành.
+
 
 ### Changed
 

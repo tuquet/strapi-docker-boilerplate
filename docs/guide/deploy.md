@@ -113,10 +113,12 @@ docker compose pull
 docker compose up -d
 ```
 
-### Bước 4 — Tắt Seed Data _(Quan trọng!)_
+### Bước 4 — Tắt Seed Data _(Bảo mật & Tối ưu!)_
 
-::: danger Bắt buộc phải làm sau lần chạy đầu tiên
-Nếu `SEED_DATA=true` vẫn bật, hệ thống sẽ **reset Database mỗi khi restart**. Sau khi seed xong, hãy tắt ngay:
+::: tip Cơ chế Bảo vệ Đa lớp Mới
+Để nâng cao trải nghiệm nhà phát triển và tránh rủi ro mất mát dữ liệu:
+1. **Tự động Khóa (Lock Flag):** Khi hệ thống nạp dữ liệu thành công lần đầu, container Strapi sẽ tự động tạo một file đánh dấu `.seeded` trong thư mục persistent volume. Từ đó, dù `SEED_DATA=true` vẫn bật, container sẽ tự động bỏ qua bước seed ở các lần restart sau, đảm bảo **không bao giờ ghi đè** lên dữ liệu của bạn.
+2. **Khuyến nghị Tắt Biến Host:** Sau khi cài đặt hoàn tất, bạn vẫn nên tắt biến này ở phía host `.env` bằng script để bảo mật và tối ưu thời gian khởi động:
 :::
 
 ```bash
