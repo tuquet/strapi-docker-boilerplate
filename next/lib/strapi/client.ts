@@ -188,6 +188,8 @@ export async function fetchSingleType<T = API.Document>(
   const { isEnabled: isDraftMode } = await draftMode();
 
   try {
+    let result: any = null;
+
     if (isDraftMode) {
       const { data } = await createClient(config, true)
         .single(singleTypeName)
@@ -195,20 +197,24 @@ export async function fetchSingleType<T = API.Document>(
           ...options,
           status: 'draft',
         });
-      return data as T;
-    }
-
-    if (process.env.ENVIRONMENT === 'development') {
+      result = data;
+    } else if (process.env.ENVIRONMENT === 'development') {
       const { data } = await createClient(config)
         .single(singleTypeName)
         .find({
           ...options,
           status: 'published',
         });
-      return data as T;
+      result = data;
+    } else {
+      result = await fetchSingleCached<T>(singleTypeName, options, config);
     }
 
-    return await fetchSingleCached<T>(singleTypeName, options, config);
+    if (!result) {
+      throw new Error(`Single type "${singleTypeName}" returned empty or null`);
+    }
+
+    return result as T;
   } catch (error: any) {
     // Nếu locale được yêu cầu gặp bất kỳ lỗi nào (chưa dịch ở Strapi, lỗi mạng, lỗi cache...),
     // tự động fall back về locale mặc định 'en' để giữ trang luôn hoạt động.

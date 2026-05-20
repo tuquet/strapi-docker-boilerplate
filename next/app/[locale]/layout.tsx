@@ -28,9 +28,14 @@ export async function generateMetadata({
   params,
 }: PropsWithChildren<LocaleParamsProps>): Promise<Metadata> {
   const { locale } = await params;
-  const pageData = await fetchSingleType('global', { locale });
+  let pageData = null;
+  try {
+    pageData = await fetchSingleType('global', { locale });
+  } catch (e) {
+    // Gracefully handle if global doesn't exist
+  }
 
-  const seo = pageData.seo;
+  const seo = pageData?.seo;
   const metadata = generateMetadataObject(seo);
   return metadata;
 }

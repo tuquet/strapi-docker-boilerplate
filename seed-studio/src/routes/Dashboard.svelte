@@ -49,6 +49,7 @@
   let isLoadingStats = $state(true);
   let isLoadingStatus = $state(true);
   let isRefreshing = $state(false);
+  let needsToken = $state(false);
   let refreshTimer: ReturnType<typeof setInterval> | undefined = $state(undefined);
 
   let rawCounts = $state<Record<string, number>>({
@@ -98,7 +99,12 @@
     try {
       const tokenQuery = apiToken ? `?token=${encodeURIComponent(apiToken)}` : '';
       const res = await fetch(`/api/content-stats${tokenQuery}`);
+      if (res.status === 401) {
+        needsToken = true;
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      needsToken = false;
       const data = await res.json();
       const stats = data.stats ?? data;
       rawCounts = {
@@ -217,6 +223,22 @@
       </Button>
     </div>
   </div>
+  {#if needsToken}
+    <div class="rounded-xl border border-warning/30 bg-warning/5 p-6">
+      <div class="flex items-start gap-4">
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-warning/10">
+          <span class="text-xl">🔑</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-foreground">API Token Required</h3>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Nhập Strapi Admin API Token ở thanh trên cùng (góc phải) để xem thống kê nội dung.
+            Token có thể lấy từ <span class="font-mono text-xs">Strapi Admin → Settings → API Tokens</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+  {/if}
 
   <!-- Stat Cards Grid -->
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
