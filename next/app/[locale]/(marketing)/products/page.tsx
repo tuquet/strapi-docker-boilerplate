@@ -31,14 +31,27 @@ export default async function Products({ params }: LocaleParamsProps) {
   const pageData = await fetchSingleType('product-page', { locale });
   const products = await fetchCollectionType<Product[]>('products', { locale });
 
-  const localizedSlugs = pageData.localizations.reduce(
+  if (!pageData) {
+    return (
+      <div className="relative py-40 text-center flex flex-col justify-center items-center h-[50vh]">
+        <h1 className="text-2xl font-bold mb-4">Content Not Found</h1>
+        <p className="text-gray-500 mb-8">
+          It looks like the products page has not been set up in the CMS.
+        </p>
+      </div>
+    );
+  }
+
+  const localizedSlugs = pageData?.localizations?.reduce(
     (acc: Record<string, string>, localization: any) => {
       acc[localization.locale] = 'products';
       return acc;
     },
     { [locale]: 'products' }
-  );
-  const featured = products.filter(
+  ) || { [locale]: 'products' };
+
+  const safeProducts = Array.isArray(products) ? products : [];
+  const featured = safeProducts.filter(
     (product: { featured?: boolean }) => product.featured
   );
 

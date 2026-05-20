@@ -11,7 +11,7 @@ export async function generateMetadata({
 }: LocaleParamsProps): Promise<Metadata> {
   const { locale } = await params;
 
-  const [pageData] = await fetchCollectionType('pages', {
+  const data = await fetchCollectionType('pages', {
     filters: {
       slug: {
         $eq: 'homepage',
@@ -20,7 +20,8 @@ export async function generateMetadata({
     },
   });
 
-  const seo = pageData.seo;
+  const pageData = Array.isArray(data) && data.length > 0 ? data[0] : null;
+  const seo = pageData?.seo;
   const metadata = generateMetadataObject(seo);
   return metadata;
 }
@@ -28,7 +29,7 @@ export async function generateMetadata({
 export default async function HomePage({ params }: LocaleParamsProps) {
   const { locale } = await params;
 
-  const [pageData] = await fetchCollectionType('pages', {
+  const data = await fetchCollectionType('pages', {
     filters: {
       slug: {
         $eq: 'homepage',
@@ -37,13 +38,26 @@ export default async function HomePage({ params }: LocaleParamsProps) {
     },
   });
 
+  const pageData = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+  if (!pageData) {
+    return (
+      <div className="relative py-40 text-center flex flex-col justify-center items-center h-[50vh]">
+        <h1 className="text-2xl font-bold mb-4">Content Not Found</h1>
+        <p className="text-gray-500 mb-8">
+          It looks like the homepage has not been set up in the CMS.
+        </p>
+      </div>
+    );
+  }
+
   const localizedSlugs = pageData.localizations?.reduce(
     (acc: Record<string, string>, localization: any) => {
       acc[localization.locale] = '';
       return acc;
     },
     { [locale]: '' }
-  );
+  ) || { [locale]: '' };
 
   return (
     <>

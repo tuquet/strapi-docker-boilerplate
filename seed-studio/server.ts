@@ -461,6 +461,161 @@ app.post('/api/append-csv', async (c) => {
   }
 });
 
+// ── Sprint 2: Dashboard & Content APIs ──────────────────────────────
+
+/**
+ * GET /api/strapi-status
+ * Health check endpoint – verifies that Strapi is reachable.
+ * Query params: ?token=<api-token>
+ */
+app.get('/api/strapi-status', async (c) => {
+  const token = c.req.query('token');
+  const apiToken = token || API_TOKEN;
+
+  try {
+    // Try to reach Strapi's content-type-builder API for version info
+    const headers: Record<string, string> = {};
+    if (apiToken) headers['Authorization'] = `Bearer ${apiToken}`;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(`${STRAPI_URL}/api/content-type-builder/content-types`, {
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json() as { data?: unknown[] };
+      return c.json({
+        status: 'online',
+        url: STRAPI_URL,
+        contentTypes: Array.isArray(data.data) ? data.data.length : 0,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // If auth fails, try unauthenticated health check
+    const healthRes = await fetch(`${STRAPI_URL}/_health`);
+    return c.json({
+      status: healthRes.ok ? 'online' : 'degraded',
+      url: STRAPI_URL,
+      contentTypes: 0,
+      timestamp: new Date().toISOString(),
+      note: 'Token may be invalid - limited info available',
+    });
+  } catch (err) {
+    return c.json({
+      status: 'offline',
+      url: STRAPI_URL,
+      error: err instanceof Error ? err.message : 'Connection failed',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * GET /api/content-stats
+ * Get counts for all content types.
+ * Query params: ?token=<api-token>
+ */
+app.get('/api/content-stats', async (c) => {
+  const token = c.req.query('token');
+  const apiToken = token || API_TOKEN;
+
+  if (!apiToken) {
+    return c.json({ success: false, error: 'API token required' }, 401);
+  }
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${apiToken}`,
+  };
+
+  const contentTypes = [
+    { key: 'articles', endpoint: '/api/articles' },
+    { key: 'products', endpoint: '/api/products' },
+    { key: 'categories', endpoint: '/api/categories' },
+    { key: 'plans', endpoint: '/api/plans' },
+    { key: 'faqs', endpoint: '/api/faqs' },
+    { key: 'testimonials', endpoint: '/api/testimonials' },
+    { key: 'logos', endpoint: '/api/logos' },
+    { key: 'pages', endpoint: '/api/pages' },
+  ];
+
+  const stats: Record<string, number> = {};
+
+  await Promise.all(
+    contentTypes.map(async ({ key, endpoint }) => {
+      try {
+        const res = await fetch(
+          `${STRAPI_URL}${endpoint}?pagination[pageSize]=1&pagination[withCount]=true`,
+          { headers }
+        );
+        if (res.ok) {
+          const data = await res.json() as { meta?: { pagination?: { total?: number } } };
+          stats[key] = data.meta?.pagination?.total ?? 0;
+        } else {
+          stats[key] = -1; // Error
+        }
+      } catch {
+        stats[key] = -1;
+      }
+    })
+  );
+
+  return c.json({ success: true, stats });
+});
+
+/**
+ * GET /api/content/:type
+ * Generic proxy to list any Strapi content type with pagination.
+ * Query params: ?token=<api-token> & any Strapi query params
+ */
+app.get('/api/content/:type', async (c) => {
+  const type = c.req.param('type');
+  const token = c.req.query('token');
+  const apiToken = token || API_TOKEN;
+
+  // Get Authorization from header or query
+  const authHeader = c.req.header('Authorization');
+  const finalToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : apiToken;
+
+  if (!finalToken) {
+    return c.json({ success: false, error: 'API token required' }, 401);
+  }
+
+  // Forward all query params except 'token'
+  const url = new URL(`${STRAPI_URL}/api/${type}`);
+  const searchParams = new URL(c.req.url).searchParams;
+  searchParams.forEach((value, key) => {
+    if (key !== 'token') url.searchParams.set(key, value);
+  });
+
+  // Default pagination if not specified
+  if (!url.searchParams.has('pagination[pageSize]')) {
+    url.searchParams.set('pagination[pageSize]', '25');
+    url.searchParams.set('pagination[withCount]', 'true');
+  }
+
+  try {
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${finalToken}` },
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      return c.json({ success: false, error: (data as any).error?.message || 'Strapi error' }, res.status);
+    }
+
+    return c.json({ success: true, ...data as object });
+  } catch (err) {
+    return c.json({ success: false, error: err instanceof Error ? err.message : 'Proxy error' }, 500);
+  }
+});
+
 // ── Static file serving (Svelte production build) ────────────────────
 app.use('*', serveStatic({ root: './dist' }));
 

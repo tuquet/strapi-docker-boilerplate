@@ -27,8 +27,8 @@ type Props = {
 };
 
 export const MobileNavbar = ({
-  leftNavbarItems,
-  rightNavbarItems,
+  leftNavbarItems = [],
+  rightNavbarItems = [],
   logo,
   locale,
 }: Props) => {

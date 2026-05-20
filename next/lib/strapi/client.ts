@@ -67,6 +67,8 @@ export async function fetchCollectionType<T = API.Document[]>(
   const { isEnabled: isDraftMode } = await draftMode();
 
   try {
+    let result: any = null;
+
     // Bypass cache in draft mode for real-time preview
     if (isDraftMode) {
       const { data } = await createClient(config, true)
@@ -75,23 +77,73 @@ export async function fetchCollectionType<T = API.Document[]>(
           ...options,
           status: 'draft',
         });
-      return data as T;
-    }
-
-    // Bypass cache in development mode
-    if (process.env.ENVIRONMENT === 'development') {
+      result = data;
+    } else if (process.env.ENVIRONMENT === 'development') {
+      // Bypass cache in development mode
       const { data } = await createClient(config)
         .collection(collectionName)
         .find({
           ...options,
           status: 'published',
         });
-      return data as T;
+      result = data;
+    } else {
+      // Use cached version for published content
+      result = await fetchCollectionCached<T>(collectionName, options, config);
     }
 
-    // Use cached version for published content
-    return fetchCollectionCached<T>(collectionName, options, config);
+    // Check if requested locale is not 'en' and result is empty
+    const isLocaleNotEn =
+      (options?.locale && options.locale !== 'en') ||
+      (options?.filters && (options.filters as any).locale && (options.filters as any).locale !== 'en');
+
+    if (isLocaleNotEn && (!result || (Array.isArray(result) && result.length === 0))) {
+      const fallbackLocale = 'en';
+      console.warn(
+        `[Strapi] Collection "${collectionName}" returned empty for locale "${options?.locale || (options?.filters as any)?.locale}". Falling back to default "en".`
+      );
+
+      const newOptions = { ...options };
+      if (newOptions.locale) {
+        newOptions.locale = fallbackLocale;
+      }
+      if (newOptions.filters && (newOptions.filters as any).locale) {
+        newOptions.filters = {
+          ...(newOptions.filters as any),
+          locale: fallbackLocale,
+        };
+      }
+
+      return await fetchCollectionType<T>(collectionName, newOptions, config);
+    }
+
+    return result as T;
   } catch (error) {
+    const isLocaleNotEn =
+      (options?.locale && options.locale !== 'en') ||
+      (options?.filters && (options.filters as any).locale && (options.filters as any).locale !== 'en');
+
+    if (isLocaleNotEn) {
+      console.warn(
+        `[Strapi] Collection "${collectionName}" threw error for locale "${options?.locale || (options?.filters as any)?.locale}". Falling back to default "en".`,
+        error
+      );
+
+      const fallbackLocale = 'en';
+      const newOptions = { ...options };
+      if (newOptions.locale) {
+        newOptions.locale = fallbackLocale;
+      }
+      if (newOptions.filters && (newOptions.filters as any).locale) {
+        newOptions.filters = {
+          ...(newOptions.filters as any),
+          locale: fallbackLocale,
+        };
+      }
+
+      return await fetchCollectionType<T>(collectionName, newOptions, config);
+    }
+
     throw new StrapiError(
       `Failed to fetch collection "${collectionName}"`,
       collectionName,
@@ -156,8 +208,21 @@ export async function fetchSingleType<T = API.Document>(
       return data as T;
     }
 
-    return fetchSingleCached<T>(singleTypeName, options, config);
-  } catch (error) {
+    return await fetchSingleCached<T>(singleTypeName, options, config);
+  } catch (error: any) {
+    // Nếu locale được yêu cầu gặp bất kỳ lỗi nào (chưa dịch ở Strapi, lỗi mạng, lỗi cache...),
+    // tự động fall back về locale mặc định 'en' để giữ trang luôn hoạt động.
+    if (options?.locale && options.locale !== 'en') {
+      console.warn(
+        `[Strapi] Locale "${options.locale}" failed for single type "${singleTypeName}". Falling back to default "en".`
+      );
+      return await fetchSingleType<T>(
+        singleTypeName,
+        { ...options, locale: 'en' },
+        config
+      );
+    }
+
     throw new StrapiError(
       `Failed to fetch single type "${singleTypeName}"`,
       singleTypeName,
@@ -224,7 +289,7 @@ export async function fetchDocument<T = API.Document>(
       return data as T;
     }
 
-    return fetchDocumentCached<T>(collectionName, documentId, options, config);
+    return await fetchDocumentCached<T>(collectionName, documentId, options, config);
   } catch (error) {
     throw new StrapiError(
       `Failed to fetch document "${documentId}" from "${collectionName}"`,

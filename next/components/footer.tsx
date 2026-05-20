@@ -74,20 +74,20 @@ export const Footer = async ({
 };
 
 const LinkSection = ({
-  links,
+  links = [],
   locale,
 }: {
-  links: { text: string; URL: never | string }[];
+  links?: { text: string; URL: never | string }[];
   locale: string;
 }) => (
   <div className="flex justify-center space-y-4 flex-col mt-4">
-    {links.map((link) => (
+    {links?.map((link) => (
       <Link
-        key={link.text}
+        key={link?.text}
         className="transition-colors hover:text-neutral-400 text-muted text-xs sm:text-sm"
-        href={`${link.URL.startsWith('http') ? '' : `/${locale}`}${link.URL}`}
+        href={`${link?.URL?.startsWith('http') ? '' : `/${locale}`}${link?.URL}`}
       >
-        {link.text}
+        {link?.text}
       </Link>
     ))}
   </div>

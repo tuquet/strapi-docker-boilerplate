@@ -31,8 +31,8 @@ type Props = {
 };
 
 export const DesktopNavbar = ({
-  leftNavbarItems,
-  rightNavbarItems,
+  leftNavbarItems = [],
+  rightNavbarItems = [],
   logo,
   locale,
 }: Props) => {

@@ -42,13 +42,13 @@ export default async function SingleProductPage({
   }
 
   const localizedSlugs =
-    pageData.localizations?.reduce(
+    pageData?.localizations?.reduce(
       (acc: Record<string, string>, localization: any) => {
         acc[localization.locale] = localization.slug;
         return acc;
       },
       { [locale]: slug }
-    ) || {};
+    ) || { [locale]: slug };
 
   return (
     <div className="relative overflow-hidden w-full">

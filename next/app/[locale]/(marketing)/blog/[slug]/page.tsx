@@ -23,13 +23,13 @@ export default async function SingleArticlePage({
     return <div>Blog not found</div>;
   }
 
-  const localizedSlugs = article.localizations.reduce(
+  const localizedSlugs = article.localizations?.reduce(
     (acc: Record<string, string>, localization: any) => {
       acc[localization.locale] = localization.slug;
       return acc;
     },
     { [locale]: slug }
-  );
+  ) || { [locale]: slug };
 
   return (
     <BlogLayout article={article} locale={locale}>
