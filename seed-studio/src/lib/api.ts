@@ -12,7 +12,15 @@ export async function fetchSeedFile(path: string) {
   return await res.text();
 }
 
-export async function submitArticle(form: any, apiToken: string = '') {
+export interface ArticleFormData {
+  title: string;
+  slug: string;
+  category: string;
+  description: string;
+  content: string;
+}
+
+export async function submitArticle(form: ArticleFormData, apiToken: string = '') {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (apiToken) headers['Authorization'] = `Bearer ${apiToken}`;
   

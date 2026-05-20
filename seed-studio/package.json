@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "preview": "vite preview",
+    "server": "node --experimental-strip-types --watch server.ts",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
@@ -15,6 +16,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.3",
+    "@types/tar-stream": "^3.1.4",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",
     "tailwind-variants": "^3.2.2",
@@ -23,12 +25,16 @@
     "vite": "^8.0.12"
   },
   "dependencies": {
+    "@hono/node-server": "^2.0.3",
     "@lucide/svelte": "^1.16.0",
     "bits-ui": "^2.18.1",
     "clsx": "^2.1.1",
     "csv-parse": "^6.2.1",
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.21",
     "lucide-svelte": "^1.0.1",
     "tailwind-merge": "^3.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tar-stream": "^3.2.0"
   }
 }

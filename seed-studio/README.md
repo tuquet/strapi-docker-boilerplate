@@ -1,47 +1,99 @@
-# Svelte + TS + Vite
+# 🌱 LaunchPad Seed Studio
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+**Seed Studio** là công cụ GUI trực quan dùng để nạp dữ liệu mẫu (Content Seeding) vào Strapi CMS.
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Tech Stack
 
-## Need an official Svelte framework?
+| Layer       | Technology                                  |
+| ----------- | ------------------------------------------- |
+| **Frontend**| Svelte 5 + Vite 8 + Tailwind CSS 4          |
+| **Backend** | **Hono** (TypeScript) + `@hono/node-server`  |
+| **UI Kit**  | shadcn-svelte (bits-ui)                      |
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+---
 
-## Technical considerations
+## Tính năng
 
-**Why use this over SvelteKit?**
+1. **Data Explorer** — Duyệt, xem trước tất cả seed data (CSV + JSON), thêm dòng CSV nhanh.
+2. **Pipeline Visualizer** — Chạy script seed từ UI với SSE log streaming real-time.
+3. **Backup Restore** — Khôi phục database từ file backup Strapi (.tar.gz).
+4. **On-Demand Article Creator** — Tạo article trực tiếp vào Strapi qua form.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+---
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Cấu trúc
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
 ```
+seed-studio/
+├── server.ts           # Hono HTTP server (TypeScript, port 4000)
+├── seed-from-csv.mjs   # Core seeder script (4-phase pipeline)
+├── seed-data/          # CSV + JSON seed data files
+├── src/                # Svelte 5 frontend
+│   ├── App.svelte      # Main component
+│   ├── lib/
+│   │   ├── api.ts      # API client functions
+│   │   ├── utils.ts    # cn() helper
+│   │   └── components/ # shadcn-svelte UI components
+│   └── app.css         # Theme (dark mode, oklch)
+├── dist/               # Built Svelte app (served by Hono)
+└── package.json
+```
+
+---
+
+## Khởi chạy
+
+### Development (từ root project)
+
+```bash
+yarn seed:ui
+```
+
+Lệnh này chạy song song:
+- **Vite dev server** (port 5173) — Svelte frontend với HMR
+- **Hono server** (port 4000) — API backend với `--watch`
+- Vite proxy `/api` → `http://localhost:4000`
+
+### Production
+
+```bash
+# Build Svelte frontend
+cd seed-studio && npm run build
+
+# Start server (serves built UI + API)
+npm run server
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint              | Mô tả                                       |
+| ------ | --------------------- | -------------------------------------------- |
+| GET    | `/api/seed-stream`    | SSE stream — chạy seeder script              |
+| GET    | `/api/restore-stream` | SSE stream — khôi phục backup                |
+| POST   | `/api/seed-article`   | Tạo article trong Strapi + append CSV        |
+| GET    | `/api/seed-files`     | Liệt kê tất cả seed files                   |
+| GET    | `/api/seed-file?path=`| Đọc nội dung 1 seed file                    |
+| POST   | `/api/append-csv`     | Thêm dòng mới vào CSV file                  |
+
+### Query Params cho `/api/seed-stream`
+
+| Param       | Giá trị  | Mô tả                           |
+| ----------- | -------- | -------------------------------- |
+| `clean`     | `true`   | Xóa sạch rồi seed lại           |
+| `clean-only`| `true`   | Chỉ xóa, không seed             |
+| `token`     | `<token>`| Override STRAPI_ADMIN_TOKEN      |
+
+---
+
+## Biến môi trường
+
+Đọc từ file `.env` ở thư mục cha (root project):
+
+| Biến                  | Mặc định                | Mô tả               |
+| --------------------- | ----------------------- | -------------------- |
+| `STRAPI_URL`          | `http://localhost:1337`  | Strapi API URL       |
+| `STRAPI_ADMIN_TOKEN`  | —                       | API Token (required) |

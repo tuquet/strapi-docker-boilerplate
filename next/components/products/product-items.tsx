@@ -67,7 +67,7 @@ const ProductItem = ({
             {product.name}
           </span>
           <span className="bg-white text-black shadow-derek text-xs px-2 py-1 rounded-full">
-            {locale === 'fr' ? '€' : '$'}
+            {locale === 'vi' ? '₫' : '$'}
             {formatNumber(product.price, locale)}
           </span>
         </div>

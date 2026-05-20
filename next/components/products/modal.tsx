@@ -81,7 +81,7 @@ export default function AddToCartModal({
                     }}
                   />
                   <div className="text-black text-sm font-medium w-20">
-                    {locale === 'fr' ? '€' : '$'}
+                    {locale === 'vi' ? '₫' : '$'}
                     {formatNumber(item.product.price, locale)}
                   </div>
                   <button onClick={() => removeFromCart(item.product.id)}>
@@ -96,7 +96,7 @@ export default function AddToCartModal({
           <div className="text-neutral-700 ">
             Total{' '}
             <span className="font-bold">
-              {locale === 'fr' ? '€' : '$'}
+              {locale === 'vi' ? '₫' : '$'}
               {formatNumber(getCartTotal(), locale)}
             </span>
           </div>

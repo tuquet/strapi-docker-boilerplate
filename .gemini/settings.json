@@ -1,0 +1,9 @@
+{
+  "versionedSkills": [
+    "SKILLS.md",
+    "STYLE_GUIDE.md",
+    "CONTENT_TYPES.md",
+    "DEPENDENCY_GRAPH.md",
+    "TROUBLESHOOTING.md"
+  ]
+}

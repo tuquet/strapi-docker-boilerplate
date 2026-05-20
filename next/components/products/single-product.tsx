@@ -79,7 +79,7 @@ export const SingleProduct = ({
         <div>
           <h2 className="text-2xl font-semibold mb-4">{product.name}</h2>
           <p className=" mb-6 bg-white text-xs px-4 py-1 rounded-full text-black w-fit">
-            {locale === 'fr' ? '€' : '$'}
+            {locale === 'vi' ? '₫' : '$'}
             {formatNumber(product.price, locale)}
           </p>
           <p className="text-base font-normal mb-4 text-neutral-400">

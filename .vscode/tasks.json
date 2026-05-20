@@ -30,20 +30,6 @@
       }
     },
     {
-      "label": "🌱 strapi: seed",
-      "type": "shell",
-      "command": "yarn seed",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "leaf",
-        "color": "terminal.ansiGreen"
-      }
-    },
-    {
       "label": "📦 strapi: dev",
       "type": "shell",
       "command": "yarn strapi",
@@ -86,9 +72,9 @@
       }
     },
     {
-      "label": "🌱 seed: studio",
+      "label": "🌱 seed: dev",
       "type": "shell",
-      "command": "yarn seed:ui:dev",
+      "command": "yarn seed:ui",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated"
