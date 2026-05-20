@@ -12,6 +12,8 @@ export interface Image {
 }
 
 export interface Article {
+  id?: number;
+  documentId?: string;
   title: string;
   description?: string | null;
   localizations: StrapiLocaleObject[];

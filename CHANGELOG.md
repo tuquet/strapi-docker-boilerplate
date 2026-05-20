@@ -17,6 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Docker Port Mapping Update & Firewall Integration Guide**:
+  - **Môi trường Phát triển (Development - `compose.yml`)**: Thay đổi cổng ánh xạ (port mapping) của container `nginx` từ `80:80` và `443:443` thành **`8080:80`** (HTTP) và **`8444:443`** (HTTPS). Thay đổi này giúp giải phóng các cổng chuẩn `80` và `443` để nhường quyền kết nối cho cổng chính hoặc VPS Firewall (`registry-nginx-ui` của Registry Stack) hoạt động trên cùng một host.
+  - **Môi trường Production (Production - `compose.prod.yml`)**: Sử dụng cổng ánh xạ cố định là **`8000:80`** (HTTP) và **`8443:443`** (HTTPS) để tránh xung đột cổng.
+  - **Hướng dẫn cấu hình kết nối (dành cho Product/DevOps)**:
+    1. Đảm bảo **LaunchPad Registry Stack** chạy trước để làm cổng kiểm soát VPS (qua container `registry-nginx-ui` nắm giữ cổng `80` và `443`).
+    2. Đăng nhập vào giao diện quản trị **Nginx UI** (mặc định tại IP VPS cổng `80`).
+    3. Thêm một **Site** mới đại diện cho tên miền mong muốn (ví dụ: `cms.yourdomain.com`).
+    4. Trong phần **Locations**, tạo một luật chuyển tiếp (Proxy Pass) đường dẫn `/` trỏ về cổng của CMS trên localhost:
+       - Nếu chạy ở môi trường phát triển: Trỏ về `http://127.0.0.1:8080`
+       - Nếu chạy ở môi trường production: Trỏ về `http://127.0.0.1:8000`
+    5. Bật tùy chọn **Preserve Host** (`$host`) và cấu hình tab **SSL** với tính năng tự động cấp phát chứng chỉ Let's Encrypt qua giao diện của Nginx UI.
+- **TypeScript & Docker Build Fix**:
+  - Bổ sung các thuộc tính optional `id?: number` và `documentId?: string` vào interface `Article` trong `next/types/types.ts` để sửa lỗi biên dịch Next.js build (`Type error: Property 'id' does not exist on type 'Article'`) khi đóng gói trong container Docker.
 - **Seed Studio Backend Refactoring**: Di chuyển toàn bộ mã nguồn backend của Seed Studio từ JavaScript ES Modules (`server.mjs`) sang **TypeScript** (`server.ts`). Tích hợp framework **Hono** gọn nhẹ thay thế cho Express-like routes cũ, tăng cường Type Safety, và cấu hình chạy trực tiếp với tính năng `--experimental-strip-types` của Node 22.
 - **System Localization (i18n)**:
   - Thay đổi ngôn ngữ hỗ trợ của toàn hệ thống từ tiếng Pháp (`fr`) sang tiếng Việt (`vi`).
