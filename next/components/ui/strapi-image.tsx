@@ -1,7 +1,8 @@
-import { API_URL } from '@/lib/utils';
 import { unstable_noStore as noStore } from 'next/cache';
 import Image from 'next/image';
 import { ComponentProps } from 'react';
+
+import { API_URL } from '@/lib/utils';
 
 interface StrapiImageProps
   extends Omit<ComponentProps<typeof Image>, 'src' | 'alt'> {

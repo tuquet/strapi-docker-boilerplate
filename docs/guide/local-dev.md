@@ -43,11 +43,12 @@ Tùy vào công việc của bạn, hãy chọn mô hình phù hợp:
 
 ---
 
-## Cách 1: Fullstack Development *(Khuyên dùng)*
+## Cách 1: Fullstack Development _(Khuyên dùng)_
 
 Chỉ Database chạy trong Docker. Next.js và Strapi đều chạy thẳng trên máy bạn với **hot-reload** đầy đủ.
 
 ### Khi nào dùng?
+
 - Bạn cần chỉnh sửa cả Frontend lẫn Backend
 - Bạn muốn tốc độ reload nhanh nhất
 
@@ -59,7 +60,7 @@ Chỉ Database chạy trong Docker. Next.js và Strapi đều chạy thẳng tr�
 docker compose up -d launchpad-db
 ```
 
-**Bước 2:** Cài đặt thư viện *(chỉ cần làm lần đầu hoặc khi có thư viện mới)*
+**Bước 2:** Cài đặt thư viện _(chỉ cần làm lần đầu hoặc khi có thư viện mới)_
 
 ```bash
 yarn setup
@@ -95,6 +96,7 @@ NEXT_PUBLIC_API_URL=http://localhost:1337
 Toàn bộ Backend (Strapi + Database) chạy trong Docker. Bạn chỉ cần chạy Next.js trên máy.
 
 ### Khi nào dùng?
+
 - Bạn chỉ làm UI/Frontend, không cần đụng đến code Strapi
 - Bạn muốn Backend luôn ổn định, không bị ảnh hưởng bởi code mình đang viết
 
@@ -131,6 +133,7 @@ cd next && yarn dev
 Khi Next.js render trang phía Server (SSR / Server Components), nó gọi API Strapi từ trong **Node.js process** — không phải từ trình duyệt.
 
 ::: details Giải thích chi tiết
+
 ```
 Strapi chạy trong Docker, Next.js chạy trên máy bạn:
 
@@ -153,9 +156,11 @@ Khi cả hai cùng chạy trong Docker (production), DNS nội bộ Docker tự 
 **Nguyên nhân:** Next.js đang cố gọi `http://strapi:1337` nhưng máy bạn không hiểu địa chỉ này.
 
 **Giải pháp:** Thêm vào `next/.env.local`:
+
 ```ini
 STRAPI_INTERNAL_URL=http://localhost:1337
 ```
+
 Restart Next.js: `Ctrl+C` → `yarn dev`.
 
 ---
@@ -165,6 +170,7 @@ Restart Next.js: `Ctrl+C` → `yarn dev`.
 **Nguyên nhân:** Bạn vừa chạy Strapi trong Docker, vừa chạy `yarn dev` ở thư mục gốc (command đó cũng khởi động Strapi).
 
 **Giải pháp:** Chỉ chọn **một trong hai**:
+
 - `yarn dev` ở **thư mục gốc** → Strapi chạy thẳng trên máy (Cách 1)
 - `yarn dev` trong **`next/`** → Strapi chạy Docker (Cách 2)
 

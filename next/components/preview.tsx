@@ -1,8 +1,9 @@
 'use client';
 
-import { API_URL } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
+import { API_URL } from '@/lib/utils';
 
 export const Preview = () => {
   const router = useRouter();

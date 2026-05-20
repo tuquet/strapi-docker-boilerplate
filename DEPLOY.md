@@ -13,7 +13,7 @@ sequenceDiagram
     participant L as Máy Local (Dev)
     participant R as Docker Registry
     participant V as Máy chủ VPS (Prod)
-    
+
     L->>L: 1. Code & Commit
     L->>L: 2. Build Docker Images (Next.js & Strapi)
     L->>R: 3. Push Images lên Registry
@@ -26,7 +26,9 @@ sequenceDiagram
 ## 💻 Giai đoạn 1: Thao tác tại máy Local
 
 ### 1. Build và Push Image lên Registry
+
 Sử dụng công cụ đã được tối ưu hóa trong VS Code để thực hiện tự động cả 2 bước Build và Push:
+
 1. Nhấn `Ctrl + Shift + B`
 2. Chọn Task: **`🐳 registry: push-all`**
 3. Hệ thống sẽ hỏi:
@@ -38,22 +40,27 @@ Sử dụng công cụ đã được tối ưu hóa trong VS Code để thực h
 ## 🌐 Giai đoạn 2: Thao tác tại máy chủ VPS
 
 ### 1. Chuẩn bị file `.env`
+
 Sử dụng script để tự động tạo cấu hình bảo mật thay vì làm thủ công:
+
 ```bash
 chmod +x scripts/copy-env.sh
 ./scripts/copy-env.sh --env prod . ./strapi
 ```
-*(Script tự động set `COMPOSE_FILE=compose.prod.yml` để bạn không cần gõ flag `-f` khi chạy lệnh Docker Compose)*
+
+_(Script tự động set `COMPOSE_FILE=compose.prod.yml` để bạn không cần gõ flag `-f` khi chạy lệnh Docker Compose)_
 
 Mở file `.env` và kiểm tra thông số Registry:
+
 ```env
-# Mặc định là localhost:5000 nếu Registry cài trên cùng VPS. 
+# Mặc định là localhost:5000 nếu Registry cài trên cùng VPS.
 # Nếu bạn dùng Registry ở máy chủ khác, hãy thay bằng IP/Domain của Registry đó.
-REGISTRY_URL=localhost:5000 
-IMAGE_TAG=latest 
+REGISTRY_URL=localhost:5000
+IMAGE_TAG=latest
 ```
 
 ### 2. Triển khai Hệ thống (Pull & Run)
+
 ```bash
 # Tải các image mới nhất
 docker compose pull
@@ -63,7 +70,9 @@ docker compose up -d
 ```
 
 ### 3. Tắt chế độ Seed Data (Rất Quan Trọng)
+
 Nếu biến `SEED_DATA=true` đang bật, hệ thống sẽ reset lại Database mỗi khi khởi động lại. Sau lần chạy đầu tiên thành công, bạn **BẮT BUỘC** phải tắt nó đi:
+
 ```bash
 chmod +x scripts/toggle-seed.sh
 ./scripts/toggle-seed.sh disable
@@ -90,11 +99,12 @@ Chỉ cần mở file `.env` trên VPS, đổi `IMAGE_TAG` về phiên bản cũ
 
 ## ⚙️ Cấu hình Nginx Proxy (Dành cho LaunchPad Registry Stack)
 
-*(Lưu ý: Bỏ qua phần này nếu bạn không cài đặt Nginx UI từ hệ sinh thái LaunchPad Registry Stack).*
+_(Lưu ý: Bỏ qua phần này nếu bạn không cài đặt Nginx UI từ hệ sinh thái LaunchPad Registry Stack)._
 
 Thay vì chiếm dụng cổng `80` và `443`, container Nginx của CMS sẽ đẩy website ra cổng `8000` để nhường quyền quản lý SSL cho **Nginx UI**.
 
 **Cách trỏ Tên miền (Domain) vào hệ thống:**
+
 1. Đăng nhập vào **Nginx UI** trên VPS.
 2. Thêm một **Site** mới với thông số:
    - **Server Name:** `cms.yourdomain.com`
@@ -113,9 +123,11 @@ Thay vì chiếm dụng cổng `80` và `443`, container Nginx của CMS sẽ đ
 > Cảnh báo: Các lệnh dọn dẹp dưới đây là biện pháp mạnh để giải phóng ổ cứng. Chỉ thực hiện khi VPS báo lỗi Full Disk (Không pull/build được ảnh).
 
 ### Tràn dung lượng ổ cứng (No space left on device)
-Trong quá trình Push/Pull cập nhật nhiều lần, Docker sẽ giữ lại các phiên bản cũ gây ra "rác" (Dangling Images, Build Cache) chiếm hàng chục GB ổ cứng. 
+
+Trong quá trình Push/Pull cập nhật nhiều lần, Docker sẽ giữ lại các phiên bản cũ gây ra "rác" (Dangling Images, Build Cache) chiếm hàng chục GB ổ cứng.
 
 **Giải pháp:** Chạy script dọn dẹp (Lệnh này an toàn với các Container đang chạy, nó chỉ dọn rác và các container đã dừng):
+
 ```bash
 sh scripts/cleanup.sh
 ```

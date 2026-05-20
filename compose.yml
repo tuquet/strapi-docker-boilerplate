@@ -28,7 +28,11 @@ services:
     ports:
       - '1337:1337'
     healthcheck:
-      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:1337/admin > /dev/null || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://127.0.0.1:1337/admin > /dev/null || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10

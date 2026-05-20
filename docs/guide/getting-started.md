@@ -6,12 +6,12 @@ Chào mừng bạn đến với **LaunchPad CMS Fullstack**! Trang này sẽ gi�
 
 LaunchPad là một bộ giải pháp **Headless CMS** sẵn sàng cho Production, bao gồm hai phần hoạt động cùng nhau:
 
-| Phần | Công nghệ | Vai trò |
-|:-----|:----------|:--------|
-| **Backend (CMS)** | Strapi 5 | Quản lý nội dung, cung cấp API |
-| **Frontend** | Next.js 15 | Hiển thị website, tối ưu SEO |
-| **Database** | PostgreSQL | Lưu trữ dữ liệu |
-| **Proxy** | Nginx | Điều phối traffic ra internet |
+| Phần              | Công nghệ  | Vai trò                        |
+| :---------------- | :--------- | :----------------------------- |
+| **Backend (CMS)** | Strapi 5   | Quản lý nội dung, cung cấp API |
+| **Frontend**      | Next.js 15 | Hiển thị website, tối ưu SEO   |
+| **Database**      | PostgreSQL | Lưu trữ dữ liệu                |
+| **Proxy**         | Nginx      | Điều phối traffic ra internet  |
 
 Tất cả được đóng gói bằng **Docker Compose** — bạn không cần cài Node.js, PostgreSQL hay bất cứ thứ gì khác ngoài Docker.
 
@@ -20,14 +20,16 @@ Tất cả được đóng gói bằng **Docker Compose** — bạn không cần
 Trước khi bắt đầu, hãy đảm bảo máy tính của bạn đã có:
 
 ::: info Bắt buộc
-- **Docker Desktop** — [Tải về tại đây](https://www.docker.com/products/docker-desktop/) *(Windows / macOS / Linux)*
+
+- **Docker Desktop** — [Tải về tại đây](https://www.docker.com/products/docker-desktop/) _(Windows / macOS / Linux)_
 - **Git** — để clone mã nguồn về máy
-:::
+  :::
 
 ::: tip Khuyên dùng (cho Developer)
+
 - **Node.js 20+** và **Yarn** — nếu bạn muốn phát triển / chỉnh sửa code
 - **VS Code** — editor được tối ưu sẵn với `.vscode/tasks.json`
-:::
+  :::
 
 ---
 
@@ -47,6 +49,7 @@ bash scripts/install.sh
 ```
 
 Script này sẽ tự động làm tất cả:
+
 1. ✅ Kiểm tra Docker đang chạy
 2. ✅ Tạo file `.env` với cấu hình mặc định
 3. ✅ Build và khởi động toàn bộ hệ thống
@@ -54,19 +57,23 @@ Script này sẽ tự động làm tất cả:
 
 ::: details Cài đặt thủ công từng bước (cho Developer)
 **1. Tạo file cấu hình:**
+
 ```bash
 bash scripts/copy-env.sh --env dev
 ```
 
 **2. Khởi động hệ thống:**
+
 ```bash
 docker compose up -d --build
 ```
 
 **3. Nạp dữ liệu mẫu:**
+
 ```bash
 docker compose exec strapi sh -c 'echo "y" | yarn strapi import -f ./data/export_20250116105447.tar.gz --force'
 ```
+
 :::
 
 ---
@@ -75,12 +82,12 @@ docker compose exec strapi sh -c 'echo "y" | yarn strapi import -f ./data/export
 
 Sau khi cài đặt xong (thường mất 2–5 phút lần đầu), mở trình duyệt và truy cập:
 
-| Dịch vụ | URL | Mô tả |
-|:--------|:----|:------|
-| 🌐 **Website** | [http://localhost:3000](http://localhost:3000) | Giao diện người dùng cuối |
-| 🛠️ **Strapi Admin** | [http://localhost:1337/admin](http://localhost:1337/admin) | Quản trị nội dung CMS |
-| 🗄️ **Adminer (DB)** | [http://localhost:8080](http://localhost:8080) | Xem / sửa dữ liệu database |
-| 📖 **API Docs** | [http://localhost:1337/documentation/v1.0.0](http://localhost:1337/documentation/v1.0.0) | Swagger API Reference |
+| Dịch vụ             | URL                                                                                      | Mô tả                      |
+| :------------------ | :--------------------------------------------------------------------------------------- | :------------------------- |
+| 🌐 **Website**      | [http://localhost:3000](http://localhost:3000)                                           | Giao diện người dùng cuối  |
+| 🛠️ **Strapi Admin** | [http://localhost:1337/admin](http://localhost:1337/admin)                               | Quản trị nội dung CMS      |
+| 🗄️ **Adminer (DB)** | [http://localhost:8080](http://localhost:8080)                                           | Xem / sửa dữ liệu database |
+| 📖 **API Docs**     | [http://localhost:1337/documentation/v1.0.0](http://localhost:1337/documentation/v1.0.0) | Swagger API Reference      |
 
 ::: tip Tài khoản Strapi Admin
 Lần đầu truy cập `/admin`, Strapi sẽ yêu cầu bạn tạo tài khoản admin. Điền email và mật khẩu bất kỳ — tài khoản này chỉ dùng cho môi trường local của bạn.

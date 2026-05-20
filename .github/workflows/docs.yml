@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "docs/**"
+      - 'docs/**'
   # Cho phép chạy thủ công từ Actions tab
   workflow_dispatch:
 

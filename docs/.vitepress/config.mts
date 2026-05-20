@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 export default defineConfig({
   // ─── Site Metadata ────────────────────────────────────────────────────────
@@ -21,7 +21,8 @@ export default defineConfig({
       'meta',
       {
         property: 'og:description',
-        content: 'Hướng dẫn cài đặt, phát triển và triển khai LaunchPad CMS Fullstack.',
+        content:
+          'Hướng dẫn cài đặt, phát triển và triển khai LaunchPad CMS Fullstack.',
       },
     ],
   ],
@@ -58,7 +59,9 @@ export default defineConfig({
     sidebar: [
       {
         text: '🚀 Bắt Đầu',
-        items: [{ text: 'Giới thiệu & Cài đặt', link: '/guide/getting-started' }],
+        items: [
+          { text: 'Giới thiệu & Cài đặt', link: '/guide/getting-started' },
+        ],
       },
       {
         text: '💻 Phát Triển',
@@ -78,7 +81,10 @@ export default defineConfig({
 
     // Social links (top-right)
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/tuquet/launchpad-cms-fullstack' },
+      {
+        icon: 'github',
+        link: 'https://github.com/tuquet/launchpad-cms-fullstack',
+      },
     ],
 
     // Search nội bộ (không cần Algolia)
@@ -143,4 +149,4 @@ export default defineConfig({
     theme: { light: 'github-light', dark: 'github-dark' },
     lineNumbers: true,
   },
-})
+});

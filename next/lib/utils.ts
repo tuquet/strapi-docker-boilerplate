@@ -25,4 +25,6 @@ export const API_URL =
   (typeof window === 'undefined' ? process.env.STRAPI_INTERNAL_URL : '') ||
   process.env.NEXT_PUBLIC_STRAPI_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
-  (globalThis.document?.location.host.endsWith('.strapidemo.com') ? `https://${document.location.host.replace('client-', 'api-')}` : '');
+  (globalThis.document?.location.host.endsWith('.strapidemo.com')
+    ? `https://${document.location.host.replace('client-', 'api-')}`
+    : '');

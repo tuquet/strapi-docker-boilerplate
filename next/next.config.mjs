@@ -52,7 +52,8 @@ const nextConfig = {
     };
   },
   async redirects() {
-    const apiUrl = process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl =
+      process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
       console.warn(
         '[next.config] API URL is not defined. Skipping redirect generation.'

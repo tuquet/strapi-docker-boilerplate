@@ -93,7 +93,8 @@ const Card = ({
   onClick: (plan: Plan) => void;
   locale: string;
 }) => {
-  const t = translations[locale as keyof typeof translations] || translations.en;
+  const t =
+    translations[locale as keyof typeof translations] || translations.en;
 
   // Try to find the plan content that matches the current locale
   // This handles cases where the page links to the English plan but a French version exists
@@ -122,7 +123,9 @@ const Card = ({
         )}
       >
         <div className="flex justify-between items-center">
-          <p className={cn('font-medium', displayPlan.featured && 'text-black')}>
+          <p
+            className={cn('font-medium', displayPlan.featured && 'text-black')}
+          >
             {displayPlan.name}
           </p>
           {displayPlan.featured && (
@@ -148,7 +151,10 @@ const Card = ({
             </span>
           )}
           <span
-            className={cn('text-4xl font-bold', displayPlan.featured && 'text-black')}
+            className={cn(
+              'text-4xl font-bold',
+              displayPlan.featured && 'text-black'
+            )}
           >
             {displayPlan.price || displayPlan?.CTA?.text}
           </span>
@@ -168,7 +174,7 @@ const Card = ({
           className={cn(
             'w-full mt-10 mb-4',
             displayPlan.featured &&
-            'bg-black text-white hover:bg-black/80 hover:text-white'
+              'bg-black text-white hover:bg-black/80 hover:text-white'
           )}
           onClick={() => onClick(displayPlan)}
         >
@@ -182,9 +188,10 @@ const Card = ({
           </Step>
         ))}
       </div>
-      {displayPlan.additional_perks && displayPlan.additional_perks.length > 0 && (
-        <Divider featured={displayPlan.featured} />
-      )}
+      {displayPlan.additional_perks &&
+        displayPlan.additional_perks.length > 0 && (
+          <Divider featured={displayPlan.featured} />
+        )}
       <div className="p-4">
         {displayPlan.additional_perks?.map((feature, idx) => (
           <Step featured={displayPlan.featured} additional key={idx}>
@@ -195,7 +202,6 @@ const Card = ({
     </div>
   );
 };
-
 
 const Step = ({
   children,

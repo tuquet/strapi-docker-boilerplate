@@ -22,7 +22,9 @@ export async function generateMetadata({
   const pageData = Array.isArray(data) && data.length > 0 ? data[0] : null;
 
   const seo = pageData?.seo;
-  const metadata = seo ? generateMetadataObject(seo) : { title: slug, description: `${slug} page` };
+  const metadata = seo
+    ? generateMetadataObject(seo)
+    : { title: slug, description: `${slug} page` };
   return metadata;
 }
 
@@ -51,8 +53,12 @@ export default async function Page({ params }: LocaleSlugParamsProps) {
     return (
       <div className="relative py-40 text-center flex flex-col justify-center items-center h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Content Not Found</h1>
-        <p className="text-gray-500 mb-8">It looks like the page `{slug}` has not been set up in the CMS.</p>
-        <p className="text-brand">💡 Please run the AI Seeder to populate the database.</p>
+        <p className="text-gray-500 mb-8">
+          It looks like the page `{slug}` has not been set up in the CMS.
+        </p>
+        <p className="text-brand">
+          💡 Please run the AI Seeder to populate the database.
+        </p>
       </div>
     );
   }

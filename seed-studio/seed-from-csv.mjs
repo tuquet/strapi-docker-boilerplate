@@ -33,11 +33,10 @@
  *       → Rel. path  : "assets/logo.png"   (resolve từ CWD)
  * ──────────────────────────────────────────────────────────────────────────────
  */
-
+import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { parse } from 'csv-parse/sync';
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -67,8 +66,9 @@ const DEFAULT_LOCALE = 'en';
 
 // Thư mục chứa ảnh static local để seed.
 // Mặc định: strapi/public/uploads/ — override bằng SEED_STATIC_DIR env var.
-const STATIC_DIR = process.env.SEED_STATIC_DIR
-  || path.join(__dirname, '..', 'strapi', 'public', 'uploads');
+const STATIC_DIR =
+  process.env.SEED_STATIC_DIR ||
+  path.join(__dirname, '..', 'strapi', 'public', 'uploads');
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 
@@ -79,7 +79,8 @@ const log = {
   error: (endpoint, msg) => console.error(`  ❌ [${endpoint}] ${msg}`),
   section: (msg) => console.log(`\n${'─'.repeat(60)}\n🚀 ${msg}`),
   dry: (endpoint, label) => console.log(`  🔍 [DRY-RUN] ${endpoint}: ${label}`),
-  clean: (endpoint, count) => console.log(`  🗑️  [${endpoint}] Xóa ${count} bản ghi`),
+  clean: (endpoint, count) =>
+    console.log(`  🗑️  [${endpoint}] Xóa ${count} bản ghi`),
 };
 
 /** Đọc file CSV */
@@ -90,7 +91,11 @@ const readCsv = (filename) => {
     return [];
   }
   return parse(fs.readFileSync(filePath, 'utf-8'), {
-    columns: true, skip_empty_lines: true, trim: true, relax_quotes: true, comment: '#'
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+    relax_quotes: true,
+    comment: '#',
   });
 };
 
@@ -114,13 +119,20 @@ const post = async (endpoint, data) => {
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${API_TOKEN}` },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_TOKEN}`,
+      },
       body: JSON.stringify({ data }),
     });
     if (!res.ok) {
       const errBody = await res.text();
       let errMsg = errBody;
-      try { errMsg = JSON.parse(errBody)?.error?.message || errBody; } catch { /* */ }
+      try {
+        errMsg = JSON.parse(errBody)?.error?.message || errBody;
+      } catch {
+        /* */
+      }
       log.error(endpoint, `HTTP ${res.status} — ${errMsg}`);
       return null;
     }
@@ -142,13 +154,20 @@ const put = async (endpoint, data) => {
   try {
     const res = await fetch(url, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${API_TOKEN}` },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_TOKEN}`,
+      },
       body: JSON.stringify({ data }),
     });
     if (!res.ok) {
       const errBody = await res.text();
       let errMsg = errBody;
-      try { errMsg = JSON.parse(errBody)?.error?.message || errBody; } catch { /* */ }
+      try {
+        errMsg = JSON.parse(errBody)?.error?.message || errBody;
+      } catch {
+        /* */
+      }
       log.error(endpoint, `HTTP ${res.status} — ${errMsg}`);
       return null;
     }
@@ -170,7 +189,9 @@ const getAll = async (endpoint, params = '') => {
     if (!res.ok) return [];
     const json = await res.json();
     return json.data ?? [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 };
 
 /** DELETE request */
@@ -178,8 +199,13 @@ const del = async (endpoint, documentId) => {
   if (FLAG_DRY_RUN) return;
   const url = `${STRAPI_URL}/api/${endpoint}/${documentId}`;
   try {
-    await fetch(url, { method: 'DELETE', headers: { Authorization: `Bearer ${API_TOKEN}` } });
-  } catch { /* silent */ }
+    await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+    });
+  } catch {
+    /* silent */
+  }
 };
 
 /** Xóa toàn bộ data của một endpoint */
@@ -193,14 +219,15 @@ const cleanEndpoint = async (endpoint) => {
 };
 
 /** Map file extension → MIME type chính xác */
-const getMimeType = (ext) => ({
-  '.jpg':  'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.png':  'image/png',
-  '.webp': 'image/webp',
-  '.gif':  'image/gif',
-  '.svg':  'image/svg+xml',
-}[ext.toLowerCase()] ?? 'application/octet-stream');
+const getMimeType = (ext) =>
+  ({
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+  })[ext.toLowerCase()] ?? 'application/octet-stream';
 
 /**
  * Idempotency check cho Strapi Media Library.
@@ -211,7 +238,9 @@ const findExistingMedia = async (filename) => {
   if (FLAG_DRY_RUN) return null;
   const url = `${STRAPI_URL}/api/upload/files?filters[name][$eq]=${encodeURIComponent(filename)}&pagination[pageSize]=1`;
   try {
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${API_TOKEN}` } });
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+    });
     if (!res.ok) return null;
     const json = await res.json();
     // Upload API trả về array trực tiếp (không phải { data: [] })
@@ -272,7 +301,10 @@ const resolveImage = async (src, name) => {
   if (isRemote) {
     try {
       const imgRes = await fetch(resolvedSrc);
-      if (!imgRes.ok) { log.skip(`Không tải được ảnh từ URL: ${resolvedSrc}`); return null; }
+      if (!imgRes.ok) {
+        log.skip(`Không tải được ảnh từ URL: ${resolvedSrc}`);
+        return null;
+      }
       buffer = Buffer.from(await imgRes.arrayBuffer());
     } catch (err) {
       log.skip(`Lỗi fetch ảnh [${resolvedSrc}]: ${err.message}`);
@@ -291,7 +323,11 @@ const resolveImage = async (src, name) => {
   const boundary = '----FormBoundary' + Date.now();
   const header = `--${boundary}\r\nContent-Disposition: form-data; name="files"; filename="${safeName}"\r\nContent-Type: ${mimeType}\r\n\r\n`;
   const footer = `\r\n--${boundary}--\r\n`;
-  const body = Buffer.concat([Buffer.from(header), buffer, Buffer.from(footer)]);
+  const body = Buffer.concat([
+    Buffer.from(header),
+    buffer,
+    Buffer.from(footer),
+  ]);
 
   try {
     const res = await fetch(`${STRAPI_URL}/api/upload`, {
@@ -305,8 +341,14 @@ const resolveImage = async (src, name) => {
     if (!res.ok) {
       const errText = await res.text();
       let errMsg = errText;
-      try { errMsg = JSON.parse(errText)?.error?.message || errText; } catch { /* */ }
-      log.skip(`Upload ảnh thất bại [${safeName}]: HTTP ${res.status} — ${errMsg.slice(0, 120)}`);
+      try {
+        errMsg = JSON.parse(errText)?.error?.message || errText;
+      } catch {
+        /* */
+      }
+      log.skip(
+        `Upload ảnh thất bại [${safeName}]: HTTP ${res.status} — ${errMsg.slice(0, 120)}`
+      );
       return null;
     }
     const json = await res.json();
@@ -324,11 +366,18 @@ const resolveImage = async (src, name) => {
 
 /** Parse pipe-separated thành mảng { text } */
 const parsePerks = (raw) =>
-  (raw || '').split('|').map((s) => s.trim()).filter(Boolean).map((text) => ({ text }));
+  (raw || '')
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((text) => ({ text }));
 
 /** Check entity đã tồn tại chưa (by field) */
 const findExisting = async (endpoint, field, value) => {
-  const items = await getAll(endpoint, `filters[${field}][$eq]=${encodeURIComponent(value)}`);
+  const items = await getAll(
+    endpoint,
+    `filters[${field}][$eq]=${encodeURIComponent(value)}`
+  );
   return items.length > 0 ? items[0] : null;
 };
 
@@ -342,11 +391,20 @@ const findExisting = async (endpoint, field, value) => {
 const seedLogos = async () => {
   log.info('Seeding Logos...');
   const rows = readCsv('00_logos.csv');
-  if (rows.length === 0) { log.skip('Bỏ qua: 00_logos.csv không có dữ liệu'); return; }
+  if (rows.length === 0) {
+    log.skip('Bỏ qua: 00_logos.csv không có dữ liệu');
+    return;
+  }
   for (const row of rows) {
-    if (!row.company) { log.skip('Bỏ qua dòng Logo không có company'); continue; }
+    if (!row.company) {
+      log.skip('Bỏ qua dòng Logo không có company');
+      continue;
+    }
     const existing = await findExisting('logos', 'company', row.company);
-    if (existing) { log.skip(`Logo đã tồn tại: ${row.company} (ID:${existing.id})`); continue; }
+    if (existing) {
+      log.skip(`Logo đã tồn tại: ${row.company} (ID:${existing.id})`);
+      continue;
+    }
 
     if (!row.image_src) {
       log.skip(`Bỏ qua Logo "${row.company}" — thiếu image_src (required)`);
@@ -355,7 +413,9 @@ const seedLogos = async () => {
 
     const imageId = await resolveImage(row.image_src, `logo-${row.company}`);
     if (!imageId) {
-      log.skip(`Bỏ qua Logo "${row.company}" — không resolve được ảnh từ: ${row.image_src}`);
+      log.skip(
+        `Bỏ qua Logo "${row.company}" — không resolve được ảnh từ: ${row.image_src}`
+      );
       continue;
     }
 
@@ -372,14 +432,24 @@ const seedCategories = async () => {
   const rows = readCsv('01_categories.csv');
   const map = {};
   for (const row of rows) {
-    if (!row.name) { log.skip('Bỏ qua dòng không có name'); continue; }
+    if (!row.name) {
+      log.skip('Bỏ qua dòng không có name');
+      continue;
+    }
     const existing = await findExisting('categories', 'name', row.name);
-    if (existing) { map[row.name] = existing.id; log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`); continue; }
+    if (existing) {
+      map[row.name] = existing.id;
+      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
+      continue;
+    }
     const created = await post('categories', {
       name: row.name,
       locale: row.locale || DEFAULT_LOCALE,
     });
-    if (created) { map[row.name] = created.id; log.ok(created.id, row.name); }
+    if (created) {
+      map[row.name] = created.id;
+      log.ok(created.id, row.name);
+    }
   }
   return map;
 };
@@ -389,9 +459,16 @@ const seedProducts = async (categoryMap) => {
   const rows = readCsv('02_products.csv');
   const map = {};
   for (const row of rows) {
-    if (!row.name) { log.skip('Bỏ qua dòng không có name'); continue; }
+    if (!row.name) {
+      log.skip('Bỏ qua dòng không có name');
+      continue;
+    }
     const existing = await findExisting('products', 'name', row.name);
-    if (existing) { map[row.name] = existing.id; log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`); continue; }
+    if (existing) {
+      map[row.name] = existing.id;
+      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
+      continue;
+    }
 
     const categoryId = categoryMap[row.category_name];
     if (row.category_name && !categoryId) {
@@ -400,7 +477,10 @@ const seedProducts = async (categoryMap) => {
 
     let imageId = null;
     if (row.image_url) {
-      imageId = await resolveImage(row.image_url, `product-${row.slug || row.name}`);
+      imageId = await resolveImage(
+        row.image_url,
+        `product-${row.slug || row.name}`
+      );
     }
 
     const payload = {
@@ -420,7 +500,10 @@ const seedProducts = async (categoryMap) => {
     }
 
     const created = await post('products', payload);
-    if (created) { map[row.name] = created.id; log.ok(created.id, row.name); }
+    if (created) {
+      map[row.name] = created.id;
+      log.ok(created.id, row.name);
+    }
   }
   return map;
 };
@@ -430,9 +513,16 @@ const seedPlans = async (productMap) => {
   const rows = readCsv('03_plans.csv');
   const map = {};
   for (const row of rows) {
-    if (!row.name) { log.skip('Bỏ qua dòng không có name'); continue; }
+    if (!row.name) {
+      log.skip('Bỏ qua dòng không có name');
+      continue;
+    }
     const existing = await findExisting('plans', 'name', row.name);
-    if (existing) { map[row.name] = existing.id; log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`); continue; }
+    if (existing) {
+      map[row.name] = existing.id;
+      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
+      continue;
+    }
 
     const productId = productMap[row.product_name];
     if (row.product_name && !productId) {
@@ -444,13 +534,20 @@ const seedPlans = async (productMap) => {
       sub_text: row.sub_text || '',
       featured: row.featured === 'true',
       locale: row.locale || DEFAULT_LOCALE,
-      CTA: { text: row.cta_label || '', URL: row.cta_url || '/', variant: row.cta_variant || 'primary' },
+      CTA: {
+        text: row.cta_label || '',
+        URL: row.cta_url || '/',
+        variant: row.cta_variant || 'primary',
+      },
       perks: parsePerks(row.perks),
       additional_perks: parsePerks(row.additional_perks),
       product: productId ?? null,
       publishedAt: new Date().toISOString(),
     });
-    if (created) { map[row.name] = created.id; log.ok(created.id, `${row.name} (plan of: ${row.product_name})`); }
+    if (created) {
+      map[row.name] = created.id;
+      log.ok(created.id, `${row.name} (plan of: ${row.product_name})`);
+    }
   }
   return map;
 };
@@ -460,15 +557,25 @@ const seedFaqs = async () => {
   const rows = readCsv('04_faqs.csv');
   const map = {};
   for (const row of rows) {
-    if (!row.question) { log.skip('Bỏ qua dòng không có question'); continue; }
+    if (!row.question) {
+      log.skip('Bỏ qua dòng không có question');
+      continue;
+    }
     const existing = await findExisting('faqs', 'question', row.question);
-    if (existing) { map[row.question] = existing.id; log.skip(`Đã tồn tại: ${row.question.slice(0, 40)}...`); continue; }
+    if (existing) {
+      map[row.question] = existing.id;
+      log.skip(`Đã tồn tại: ${row.question.slice(0, 40)}...`);
+      continue;
+    }
     const created = await post('faqs', {
       question: row.question,
       answer: row.answer || '',
       locale: row.locale || DEFAULT_LOCALE,
     });
-    if (created) { map[row.question] = created.id; log.ok(created.id, row.question.slice(0, 60)); }
+    if (created) {
+      map[row.question] = created.id;
+      log.ok(created.id, row.question.slice(0, 60));
+    }
   }
   return map;
 };
@@ -478,9 +585,16 @@ const seedTestimonials = async () => {
   const rows = readCsv('05_testimonials.csv');
   const map = {};
   for (const row of rows) {
-    if (!row.text) { log.skip('Bỏ qua dòng không có text'); continue; }
+    if (!row.text) {
+      log.skip('Bỏ qua dòng không có text');
+      continue;
+    }
     const existing = await findExisting('testimonials', 'text', row.text);
-    if (existing) { map[row.user_name] = existing.id; log.skip(`Đã tồn tại: ${row.user_name}`); continue; }
+    if (existing) {
+      map[row.user_name] = existing.id;
+      log.skip(`Đã tồn tại: ${row.user_name}`);
+      continue;
+    }
 
     const nameParts = (row.user_name || '').trim().split(' ');
     const lastname = nameParts.pop() || '';
@@ -488,7 +602,10 @@ const seedTestimonials = async () => {
 
     let imageId = null;
     if (row.user_avatar_url) {
-      imageId = await resolveImage(row.user_avatar_url, `avatar-${firstname}-${lastname}`);
+      imageId = await resolveImage(
+        row.user_avatar_url,
+        `avatar-${firstname}-${lastname}`
+      );
     }
 
     const userPayload = { firstname, lastname, job: row.user_title || '' };
@@ -502,7 +619,10 @@ const seedTestimonials = async () => {
       user: userPayload,
       publishedAt: new Date().toISOString(),
     });
-    if (created) { map[row.user_name] = created.id; log.ok(created.id, row.user_name || '(no name)'); }
+    if (created) {
+      map[row.user_name] = created.id;
+      log.ok(created.id, row.user_name || '(no name)');
+    }
   }
   return map;
 };
@@ -514,13 +634,22 @@ const seedArticles = async (categoryMap) => {
   const map = {};
 
   for (const row of rows) {
-    if (!row.title) { log.skip('Bỏ qua dòng không có title'); continue; }
+    if (!row.title) {
+      log.skip('Bỏ qua dòng không có title');
+      continue;
+    }
     const slug = row.slug || row.title.toLowerCase().replace(/\s+/g, '-');
     const existing = await findExisting('articles', 'slug', slug);
-    if (existing) { map[row.title] = existing.id; log.skip(`Đã tồn tại: ${row.title}`); continue; }
+    if (existing) {
+      map[row.title] = existing.id;
+      log.skip(`Đã tồn tại: ${row.title}`);
+      continue;
+    }
 
     const categoryIds = (row.category_name || '')
-      .split('|').map((n) => categoryMap[n.trim()]).filter(Boolean);
+      .split('|')
+      .map((n) => categoryMap[n.trim()])
+      .filter(Boolean);
 
     // Tìm blocks content matching slug
     const articleBlocks = blocksData.find((b) => b.slug === slug);
@@ -553,7 +682,10 @@ const seedArticles = async (categoryMap) => {
     }
 
     const created = await post('articles', payload);
-    if (created) { map[row.title] = created.id; log.ok(created.id, row.title); }
+    if (created) {
+      map[row.title] = created.id;
+      log.ok(created.id, row.title);
+    }
   }
   return map;
 };
@@ -590,16 +722,27 @@ const seedPages = async (planMap, testimonialMap, faqMap) => {
   log.info('Seeding Pages (with Dynamic Zones)...');
 
   const pagesDir = path.join(SEED_DIR, 'pages');
-  if (!fs.existsSync(pagesDir)) { log.skip('Thư mục pages/ không tồn tại'); return; }
+  if (!fs.existsSync(pagesDir)) {
+    log.skip('Thư mục pages/ không tồn tại');
+    return;
+  }
 
   const files = fs.readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
   for (const file of files) {
-    const pageData = JSON.parse(fs.readFileSync(path.join(pagesDir, file), 'utf-8'));
+    const pageData = JSON.parse(
+      fs.readFileSync(path.join(pagesDir, file), 'utf-8')
+    );
     const slug = pageData.slug;
-    if (!slug) { log.skip(`File ${file} không có slug`); continue; }
+    if (!slug) {
+      log.skip(`File ${file} không có slug`);
+      continue;
+    }
 
     const existing = await findExisting('pages', 'slug', slug);
-    if (existing) { log.skip(`Page "${slug}" đã tồn tại (ID:${existing.id})`); continue; }
+    if (existing) {
+      log.skip(`Page "${slug}" đã tồn tại (ID:${existing.id})`);
+      continue;
+    }
 
     // Inject relation IDs vào dynamic_zone
     if (pageData.dynamic_zone) {
@@ -635,7 +778,16 @@ const seedPages = async (planMap, testimonialMap, faqMap) => {
 const cleanAllData = async () => {
   log.section('🗑️  Cleanup Mode — Xóa toàn bộ data cũ...');
   // Xóa theo thứ tự ngược phụ thuộc (logos sau cùng vì không có FK dependency)
-  const endpoints = ['pages', 'articles', 'plans', 'products', 'testimonials', 'faqs', 'categories', 'logos'];
+  const endpoints = [
+    'pages',
+    'articles',
+    'plans',
+    'products',
+    'testimonials',
+    'faqs',
+    'categories',
+    'logos',
+  ];
   for (const ep of endpoints) {
     await cleanEndpoint(ep);
   }
@@ -650,12 +802,17 @@ const cleanAllData = async () => {
   console.log(`📁 Seed Dir   : ${SEED_DIR}`);
   if (FLAG_DRY_RUN) console.log('🔍 Mode       : DRY-RUN (không gửi API)');
   if (FLAG_CLEAN) console.log('🗑️  Mode       : CLEAN (xóa data cũ trước)');
-  if (args.includes('--clean-only')) console.log('🗑️  Mode       : CLEAN ONLY (chỉ xóa data cũ)');
+  if (args.includes('--clean-only'))
+    console.log('🗑️  Mode       : CLEAN ONLY (chỉ xóa data cũ)');
 
   if (!API_TOKEN) {
     console.error('\n❌ STRAPI_ADMIN_TOKEN chưa được cấu hình!');
-    console.error('   → Vào Strapi Admin > Settings > API Tokens > Create new token (Full access)');
-    console.error('   → Thêm vào strapi/.env: STRAPI_ADMIN_TOKEN=your_token_here\n');
+    console.error(
+      '   → Vào Strapi Admin > Settings > API Tokens > Create new token (Full access)'
+    );
+    console.error(
+      '   → Thêm vào strapi/.env: STRAPI_ADMIN_TOKEN=your_token_here\n'
+    );
     process.exit(1);
   }
 

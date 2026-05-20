@@ -8,42 +8,42 @@
 
 ### Collection Types
 
-| Endpoint | Method | Content Type | Middleware | Auth |
-| --- | --- | --- | --- | --- |
-| `/api/articles` | GET | Article | `article-populate` | Token |
-| `/api/articles/:id` | GET | Article | `article-populate` | Token |
-| `/api/categories` | GET | Category | — | Token |
-| `/api/categories/:id` | GET | Category | — | Token |
-| `/api/faqs` | GET | FAQ | — | Token |
-| `/api/faqs/:id` | GET | FAQ | — | Token |
-| `/api/logos` | GET | Logo | — | Token |
-| `/api/logos/:id` | GET | Logo | — | Token |
-| `/api/pages` | GET | Page | `page-populate` | Token |
-| `/api/pages/:id` | GET | Page | `page-populate` | Token |
-| `/api/plans` | GET | Plan | — | Token |
-| `/api/plans/:id` | GET | Plan | — | Token |
-| `/api/products` | GET | Product | `product-populate` | Token |
-| `/api/products/:id` | GET | Product | `product-populate` | Token |
-| `/api/redirections` | GET | Redirection | — | Token |
-| `/api/redirections/:id` | GET | Redirection | — | Token |
-| `/api/testimonials` | GET | Testimonial | — | Token |
-| `/api/testimonials/:id` | GET | Testimonial | — | Token |
+| Endpoint                | Method | Content Type | Middleware         | Auth  |
+| ----------------------- | ------ | ------------ | ------------------ | ----- |
+| `/api/articles`         | GET    | Article      | `article-populate` | Token |
+| `/api/articles/:id`     | GET    | Article      | `article-populate` | Token |
+| `/api/categories`       | GET    | Category     | —                  | Token |
+| `/api/categories/:id`   | GET    | Category     | —                  | Token |
+| `/api/faqs`             | GET    | FAQ          | —                  | Token |
+| `/api/faqs/:id`         | GET    | FAQ          | —                  | Token |
+| `/api/logos`            | GET    | Logo         | —                  | Token |
+| `/api/logos/:id`        | GET    | Logo         | —                  | Token |
+| `/api/pages`            | GET    | Page         | `page-populate`    | Token |
+| `/api/pages/:id`        | GET    | Page         | `page-populate`    | Token |
+| `/api/plans`            | GET    | Plan         | —                  | Token |
+| `/api/plans/:id`        | GET    | Plan         | —                  | Token |
+| `/api/products`         | GET    | Product      | `product-populate` | Token |
+| `/api/products/:id`     | GET    | Product      | `product-populate` | Token |
+| `/api/redirections`     | GET    | Redirection  | —                  | Token |
+| `/api/redirections/:id` | GET    | Redirection  | —                  | Token |
+| `/api/testimonials`     | GET    | Testimonial  | —                  | Token |
+| `/api/testimonials/:id` | GET    | Testimonial  | —                  | Token |
 
 ### Single Types
 
-| Endpoint | Method | Content Type | Middleware |
-| --- | --- | --- | --- |
-| `/api/global` | GET | Global | `global-populate` |
-| `/api/blog-page` | GET | Blog Page | `blog-page-populate` |
-| `/api/product-page` | GET | Product Page | `product-page-populate` |
+| Endpoint            | Method | Content Type | Middleware              |
+| ------------------- | ------ | ------------ | ----------------------- |
+| `/api/global`       | GET    | Global       | `global-populate`       |
+| `/api/blog-page`    | GET    | Blog Page    | `blog-page-populate`    |
+| `/api/product-page` | GET    | Product Page | `product-page-populate` |
 
 ### System Endpoints
 
-| Endpoint | Purpose |
-| --- | --- |
-| `/admin` | Strapi Admin Panel |
+| Endpoint                | Purpose              |
+| ----------------------- | -------------------- |
+| `/admin`                | Strapi Admin Panel   |
 | `/documentation/v1.0.0` | Swagger/OpenAPI docs |
-| `/uploads/*` | Media Library files |
+| `/uploads/*`            | Media Library files  |
 
 ---
 
@@ -407,12 +407,12 @@ dynamic_zone:         [all 12 DZ types]
 
 ## 5. Frontend Route ↔ Content Type Mapping
 
-| Next.js Route | Strapi Content Type | Fetch Function |
-| --- | --- | --- |
-| `/[locale]/` | Page (slug: "homepage") | `fetchCollectionType('pages')` |
-| `/[locale]/[slug]` | Page (by slug) | `fetchCollectionType('pages')` |
-| `/[locale]/blog` | Blog Page (single) + Articles | `fetchSingleType('blog-page')` + `fetchCollectionType('articles')` |
-| `/[locale]/blog/[slug]` | Article (by slug) | `fetchCollectionType('articles')` |
-| `/[locale]/products` | Product Page (single) + Products | `fetchSingleType('product-page')` + `fetchCollectionType('products')` |
-| `/[locale]/products/[slug]` | Product (by slug) | `fetchCollectionType('products')` |
-| Layout (all pages) | Global (single) | `fetchSingleType('global')` |
+| Next.js Route               | Strapi Content Type              | Fetch Function                                                        |
+| --------------------------- | -------------------------------- | --------------------------------------------------------------------- |
+| `/[locale]/`                | Page (slug: "homepage")          | `fetchCollectionType('pages')`                                        |
+| `/[locale]/[slug]`          | Page (by slug)                   | `fetchCollectionType('pages')`                                        |
+| `/[locale]/blog`            | Blog Page (single) + Articles    | `fetchSingleType('blog-page')` + `fetchCollectionType('articles')`    |
+| `/[locale]/blog/[slug]`     | Article (by slug)                | `fetchCollectionType('articles')`                                     |
+| `/[locale]/products`        | Product Page (single) + Products | `fetchSingleType('product-page')` + `fetchCollectionType('products')` |
+| `/[locale]/products/[slug]` | Product (by slug)                | `fetchCollectionType('products')`                                     |
+| Layout (all pages)          | Global (single)                  | `fetchSingleType('global')`                                           |

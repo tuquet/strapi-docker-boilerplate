@@ -1,5 +1,5 @@
-import type { StrapiApp } from '@strapi/strapi/admin';
 import { Information } from '@strapi/icons';
+import type { StrapiApp } from '@strapi/strapi/admin';
 
 export default {
   config: {

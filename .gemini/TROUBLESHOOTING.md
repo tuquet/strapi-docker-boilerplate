@@ -13,6 +13,7 @@
 **Nguyên nhân:** Sử dụng `Math.random()`, `Date.now()`, hoặc `useId()` không đúng cách trong SSR.
 
 **Giải pháp:**
+
 - Dùng deterministic IDs (index-based hoặc data-based).
 - Wrap random content trong `useEffect` (chỉ chạy client-side).
 - Thêm `suppressHydrationWarning` nếu cần (đã dùng ở root layout).
@@ -24,6 +25,7 @@
 **Nguyên nhân:** Globe data hoặc arc positions chứa NaN sau transformation.
 
 **Giải pháp:** File `components/ui/globe.tsx` đã có NaN validation. Khi tạo 3D components mới:
+
 ```typescript
 // Luôn validate số trước khi pass vào Three.js
 if (isNaN(value)) return fallbackValue;
@@ -36,6 +38,7 @@ if (isNaN(value)) return fallbackValue;
 **Nguyên nhân:** URL sai context (SSR vs Client).
 
 **Giải pháp:**
+
 - **Dev mode:** Strapi phải đang chạy trên `localhost:1337`.
 - **Docker:** Sử dụng `STRAPI_INTERNAL_URL=http://strapi:1337` (Docker DNS).
 - **Client:** Sử dụng `NEXT_PUBLIC_API_URL=http://localhost:1337`.
@@ -52,6 +55,7 @@ if (isNaN(value)) return fallbackValue;
 **Nguyên nhân:** Missing populate middleware hoặc chưa đăng ký component.
 
 **Checklist:**
+
 1. Content type schema có `dynamic_zone` attribute?
 2. Populate middleware có `on: { 'dynamic-zone.{name}': { populate: ... } }`?
 3. Middleware đã đăng ký trong routes config?
@@ -64,6 +68,7 @@ if (isNaN(value)) return fallbackValue;
 **Nguyên nhân:** Strapi image URLs relative vs absolute.
 
 **Giải pháp:**
+
 - Luôn dùng `StrapiImage` component hoặc `strapiImage()` helper.
 - Check `next.config.mjs` → `images.remotePatterns` có domain mới không.
 - Check rewrites: `/uploads/*` → Strapi backend.
@@ -73,6 +78,7 @@ if (isNaN(value)) return fallbackValue;
 **Triệu chứng:** Content đã sửa trên Strapi nhưng frontend không cập nhật.
 
 **Giải pháp:**
+
 - Strapi Webhook → Next.js `revalidateContent()` → `revalidateTag()`.
 - Dev mode: `cacheLife` tự bypass.
 - Force revalidate: Restart Next.js hoặc clear `.next/cache`.
@@ -86,6 +92,7 @@ if (isNaN(value)) return fallbackValue;
 **Triệu chứng:** `404` khi gọi API endpoint.
 
 **Checklist:**
+
 1. Schema JSON valid? (`src/api/{name}/content-types/{name}/schema.json`)
 2. Controller, service, routes files exist?
 3. `yarn strapi build` đã chạy sau khi thêm content type?
@@ -104,6 +111,7 @@ if (isNaN(value)) return fallbackValue;
 **Triệu chứng:** Content chỉ trả về 1 locale.
 
 **Checklist:**
+
 1. Content type schema có `"i18n": { "localized": true }` trong `pluginOptions`?
 2. Từng field có `"i18n": { "localized": true }` không?
 3. API request có `?locale=fr` parameter?
@@ -114,6 +122,7 @@ if (isNaN(value)) return fallbackValue;
 **Triệu chứng:** Strapi crash khi start sau khi sửa schema.
 
 **Giải pháp:**
+
 - Dev: Xóa DB và re-seed: `docker compose down -v && docker compose up -d launchpad-db`
 - Prod: Check `strapi/database/migrations/` — thêm migration file nếu cần.
 
@@ -126,6 +135,7 @@ if (isNaN(value)) return fallbackValue;
 **Triệu chứng:** `bind: address already in use`
 
 **Giải pháp:**
+
 ```bash
 # Windows
 npx kill-port 3000 1337 54321
@@ -139,6 +149,7 @@ npx kill-port 3000 1337 54321
 **Triệu chứng:** Strapi: `ECONNREFUSED` to PostgreSQL.
 
 **Checklist:**
+
 1. DB container running? `docker compose ps`
 2. Health check passing? `docker compose logs launchpad-db`
 3. `.env` credentials match giữa Strapi và DB?
@@ -150,6 +161,7 @@ npx kill-port 3000 1337 54321
 **Triệu chứng:** `FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed`
 
 **Giải pháp:**
+
 - Dockerfile đã set `NODE_OPTIONS=--max-old-space-size=4096`.
 - VPS: Cần ít nhất 2GB RAM hoặc thêm swap.
 - Hoặc build local, push image → prod pull only (Zero-Build).
@@ -163,12 +175,14 @@ npx kill-port 3000 1337 54321
 **Triệu chứng:** Script crash ở Phase 1/2/3.
 
 **Checklist:**
+
 1. Strapi running và API accessible?
 2. `STRAPI_ADMIN_TOKEN` valid trong `.env`?
 3. CSV format đúng? (headers phải match exact).
 4. Image URLs accessible? (Unsplash có thể bị rate-limit).
 
 **Recovery:**
+
 ```bash
 # Clean toàn bộ rồi re-seed
 node seed-from-csv.mjs --clean
@@ -179,6 +193,7 @@ node seed-from-csv.mjs --clean
 **Nguyên nhân:** Seeder đã có idempotency check (by slug/name/question).
 
 **Nhưng nếu vẫn duplicate:**
+
 ```bash
 # Wipe sạch trước khi seed lại
 node seed-from-csv.mjs --clean-only
@@ -194,6 +209,7 @@ node seed-from-csv.mjs
 **Pattern:** `yarn dev` đã handle bằng `wait-on http://127.0.0.1:1337`.
 
 Nếu chạy riêng:
+
 ```bash
 # Terminal 1
 yarn strapi
@@ -207,6 +223,7 @@ yarn next
 **Triệu chứng:** `.next/dev/lock` prevents start.
 
 **Giải pháp:**
+
 ```bash
 yarn fix:lock
 # Hoặc
@@ -218,6 +235,7 @@ npx rimraf next/.next/dev/lock
 **Triệu chứng:** Commit bị rejected bởi Husky.
 
 **Giải pháp:**
+
 ```bash
 # Format all files
 yarn fix:format

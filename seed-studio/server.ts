@@ -1,17 +1,16 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import zlib from 'node:zlib';
-import readline from 'node:readline';
 import * as tar from 'tar-stream';
-
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { streamSSE } from 'hono/streaming';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import dotenv from 'dotenv';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { streamSSE } from 'hono/streaming';
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import readline from 'node:readline';
+import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
 
 // ─── Config ──────────────────────────────────────────────────────────
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,7 +40,9 @@ function getFiles(dir: string): string[] {
     if (stat.isDirectory()) {
       results.push(...getFiles(fullPath));
     } else if (file.endsWith('.csv') || file.endsWith('.json')) {
-      results.push(fullPath.replace(SEED_DATA_DIR + path.sep, '').replace(/\\/g, '/'));
+      results.push(
+        fullPath.replace(SEED_DATA_DIR + path.sep, '').replace(/\\/g, '/')
+      );
     }
   }
   return results;
@@ -129,29 +130,38 @@ app.get('/api/restore-stream', (c) => {
 
     const files = fs.readdirSync(dataDir).filter((f) => f.endsWith('.tar.gz'));
     if (files.length === 0) {
-      await writeEvent('log', 'Error: Không tìm thấy file backup (.tar.gz) trong thư mục strapi/data.');
+      await writeEvent(
+        'log',
+        'Error: Không tìm thấy file backup (.tar.gz) trong thư mục strapi/data.'
+      );
       await writeEvent('done', { code: 1 });
       return;
     }
 
     const backupFile = files.sort().reverse()[0];
     await writeEvent('log', `> Tìm thấy file backup: ${backupFile}`);
-    await writeEvent('log', '> Đang chạy tiến trình khôi phục (Strapi import)...');
+    await writeEvent(
+      'log',
+      '> Đang chạy tiến trình khôi phục (Strapi import)...'
+    );
 
-    const importArgs = ['strapi', 'import', '-f', `./data/${backupFile}`, '--force', '--verbose'];
+    const importArgs = [
+      'strapi',
+      'import',
+      '-f',
+      `./data/${backupFile}`,
+      '--force',
+      '--verbose',
+    ];
     if (onlyStr) {
       importArgs.push('--only', onlyStr);
     }
 
-    const child = spawn(
-      'yarn',
-      importArgs,
-      {
-        cwd: path.join(__dirname, '..', 'strapi'),
-        env: { ...process.env, NO_COLOR: '1' },
-        shell: true,
-      },
-    );
+    const child = spawn('yarn', importArgs, {
+      cwd: path.join(__dirname, '..', 'strapi'),
+      env: { ...process.env, NO_COLOR: '1' },
+      shell: true,
+    });
 
     child.stdout.on('data', (data: Buffer) => {
       writeEvent('log', stripAnsi(data.toString('utf8')));
@@ -203,17 +213,17 @@ app.get('/api/backup-preview', async (c) => {
       categories: { count: 0, items: [] as any[] },
       media: { count: 0, items: [] as any[] },
       users: { count: 0, items: [] as any[] },
-      others: 0
+      others: 0,
     };
 
     const extract = tar.extract();
-    
+
     await new Promise<void>((resolve, reject) => {
       extract.on('entry', (header, stream, next) => {
         if (header.name === 'entities/entities_00001.jsonl') {
           const rl = readline.createInterface({
             input: stream,
-            crlfDelay: Infinity
+            crlfDelay: Infinity,
           });
 
           rl.on('line', (line) => {
@@ -223,22 +233,38 @@ app.get('/api/backup-preview', async (c) => {
               if (obj.type === 'api::article.article') {
                 stats.articles.count++;
                 if (stats.articles.items.length < 200) {
-                  stats.articles.items.push({ id: obj.id, title: obj.data.title, slug: obj.data.slug });
+                  stats.articles.items.push({
+                    id: obj.id,
+                    title: obj.data.title,
+                    slug: obj.data.slug,
+                  });
                 }
               } else if (obj.type === 'api::category.category') {
                 stats.categories.count++;
                 if (stats.categories.items.length < 200) {
-                  stats.categories.items.push({ id: obj.id, title: obj.data.name, slug: obj.data.slug });
+                  stats.categories.items.push({
+                    id: obj.id,
+                    title: obj.data.name,
+                    slug: obj.data.slug,
+                  });
                 }
               } else if (obj.type === 'plugin::upload.file') {
                 stats.media.count++;
                 if (stats.media.items.length < 200) {
-                  stats.media.items.push({ id: obj.id, title: obj.data.name, url: obj.data.url });
+                  stats.media.items.push({
+                    id: obj.id,
+                    title: obj.data.name,
+                    url: obj.data.url,
+                  });
                 }
               } else if (obj.type === 'plugin::users-permissions.user') {
                 stats.users.count++;
                 if (stats.users.items.length < 200) {
-                  stats.users.items.push({ id: obj.id, title: obj.data.username || obj.data.email, email: obj.data.email });
+                  stats.users.items.push({
+                    id: obj.id,
+                    title: obj.data.username || obj.data.email,
+                    email: obj.data.email,
+                  });
                 }
               } else {
                 stats.others++;
@@ -267,15 +293,13 @@ app.get('/api/backup-preview', async (c) => {
         reject(err);
       });
 
-      fs.createReadStream(backupPath)
-        .pipe(zlib.createGunzip())
-        .pipe(extract);
+      fs.createReadStream(backupPath).pipe(zlib.createGunzip()).pipe(extract);
     });
 
     return c.json({
       success: true,
       file: backupFile,
-      stats
+      stats,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
@@ -299,12 +323,17 @@ app.post('/api/seed-article', async (c) => {
 
     if (!apiToken) {
       return c.json(
-        { success: false, error: 'STRAPI_ADMIN_TOKEN is missing. Vui lòng nhập token trên UI hoặc trong .env' },
-        401,
+        {
+          success: false,
+          error:
+            'STRAPI_ADMIN_TOKEN is missing. Vui lòng nhập token trên UI hoặc trong .env',
+        },
+        401
       );
     }
 
-    const slug = payload.slug || payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug =
+      payload.slug || payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
     const strapiPayload = {
       data: {
@@ -341,7 +370,9 @@ app.post('/api/seed-article', async (c) => {
     };
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to create article in Strapi');
+      throw new Error(
+        data.error?.message || 'Failed to create article in Strapi'
+      );
     }
 
     // Append to CSV for persistence
@@ -445,5 +476,7 @@ app.get('*', (c) => {
 
 // ─── Start Server ────────────────────────────────────────────────────
 serve({ fetch: app.fetch, port: PORT }, () => {
-  console.log(`\n🚀 LaunchPad Seed Studio Backend API is running at http://localhost:${PORT}\n`);
+  console.log(
+    `\n🚀 LaunchPad Seed Studio Backend API is running at http://localhost:${PORT}\n`
+  );
 });

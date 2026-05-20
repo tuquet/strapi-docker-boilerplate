@@ -13,12 +13,13 @@ VPS (thường cấu hình thấp 1–2GB RAM) **không** làm nhiệm vụ Buil
 Hãy chuẩn bị đủ những thứ sau:
 
 ::: info Checklist chuẩn bị
+
 - [ ] **VPS** với Ubuntu 20.04+ và tối thiểu 1GB RAM
 - [ ] **Docker Engine** cài trên VPS (`curl -fsSL https://get.docker.com | sh`)
 - [ ] **Docker Compose v2** (`docker compose version` để kiểm tra)
 - [ ] **Private Docker Registry** — dùng LaunchPad Registry Stack hoặc bất kỳ registry nào
 - [ ] Đã SSH được vào VPS (`ssh user@your-server-ip`)
-:::
+      :::
 
 ---
 
@@ -39,6 +40,7 @@ Hãy chuẩn bị đủ những thứ sau:
 ```
 
 **Luồng làm việc mỗi khi update:**
+
 1. Sửa code trên máy Local
 2. Build Docker Image và Push lên Registry
 3. VPS Pull Image mới → Restart container
@@ -47,7 +49,7 @@ Hãy chuẩn bị đủ những thứ sau:
 
 ## Giai Đoạn 1: Build & Push từ Máy Local
 
-### Sử dụng VS Code Task *(cách nhanh nhất)*
+### Sử dụng VS Code Task _(cách nhanh nhất)_
 
 1. Nhấn `Ctrl + Shift + B`
 2. Chọn Task: **`🐳 registry: push-all`**
@@ -56,6 +58,7 @@ Hãy chuẩn bị đủ những thứ sau:
    - **Image Tag:** phiên bản (dùng `latest` hoặc điền mã version)
 
 ::: details Không dùng VS Code? Build bằng lệnh tay
+
 ```bash
 # Build image Next.js
 docker build -t <registry>/launchpad-next:latest ./next
@@ -67,6 +70,7 @@ docker build -t <registry>/launchpad-strapi:latest ./strapi
 docker push <registry>/launchpad-next:latest
 docker push <registry>/launchpad-strapi:latest
 ```
+
 :::
 
 ---
@@ -109,7 +113,7 @@ docker compose pull
 docker compose up -d
 ```
 
-### Bước 4 — Tắt Seed Data *(Quan trọng!)*
+### Bước 4 — Tắt Seed Data _(Quan trọng!)_
 
 ::: danger Bắt buộc phải làm sau lần chạy đầu tiên
 Nếu `SEED_DATA=true` vẫn bật, hệ thống sẽ **reset Database mỗi khi restart**. Sau khi seed xong, hãy tắt ngay:
@@ -153,7 +157,7 @@ docker compose up -d
 
 ## Cấu Hình Nginx & HTTPS
 
-*(Bỏ qua phần này nếu bạn không dùng LaunchPad Registry Stack)*
+_(Bỏ qua phần này nếu bạn không dùng LaunchPad Registry Stack)_
 
 Container Nginx của CMS đẩy website ra **cổng 8000** (không chiếm cổng 80/443). Bạn cần cấu hình Nginx UI để trỏ domain vào đây.
 
@@ -163,18 +167,18 @@ Container Nginx của CMS đẩy website ra **cổng 8000** (không chiếm cổ
 
 **2.** Tạo **Site** mới:
 
-| Trường | Giá trị |
-|:-------|:--------|
+| Trường      | Giá trị              |
+| :---------- | :------------------- |
 | Server Name | `cms.yourdomain.com` |
-| Listen | `80` |
+| Listen      | `80`                 |
 
 **3.** Trong **Locations**, tạo Proxy:
 
-| Trường | Giá trị |
-|:-------|:--------|
-| Path | `/` |
-| Proxy Pass | `http://127.0.0.1:8000` |
-| Host | Bật "Preserve Host" (`$host`) |
+| Trường     | Giá trị                       |
+| :--------- | :---------------------------- |
+| Path       | `/`                           |
+| Proxy Pass | `http://127.0.0.1:8000`       |
+| Host       | Bật "Preserve Host" (`$host`) |
 
 **4.** Tab **SSL** → Enable SSL (Let's Encrypt) → Điền Email → Bấm **Issue**
 

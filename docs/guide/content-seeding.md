@@ -19,10 +19,11 @@ Tool này giúp bạn **nạp nội dung thật vào CMS tự động** — thay
    ```bash
    yarn seed:ui
    ```
-   *(Hoặc ấn `Ctrl + Shift + P` > **Run Task** > chọn **`🌱 seed: ui`**)*
+   _(Hoặc ấn `Ctrl + Shift + P` > **Run Task** > chọn **`🌱 seed: ui`**)_
 3. Mở trình duyệt tại **http://localhost:4000**
 
 Tại Seed Studio, bạn có thể:
+
 - Xem Terminal Log chạy trực tiếp trên web (Pipeline Visualizer).
 - Chọn linh hoạt giữa các chế độ: Update, Wipe DB, hoặc Clean & Seed.
 - Nhập nhanh bài viết mới thông qua form trực quan (On-Demand Article) mà không cần chạm vào file CSV.
@@ -76,20 +77,20 @@ node scripts/seed-from-csv.mjs --clean
 
 Script tự động seed **12 loại nội dung** theo đúng thứ tự phụ thuộc:
 
-| Phase | File | Nội dung |
-|:------|:-----|:---------|
-| Phase 0 | `00_logos.csv` | Logo thương hiệu *(image required)* |
-| Phase 1 | `01_categories.csv` | Danh mục |
-| Phase 1 | `02_products.csv` | Sản phẩm |
-| Phase 1 | `03_plans.csv` | Gói dịch vụ / Pricing |
-| Phase 1 | `04_faqs.csv` | Câu hỏi thường gặp |
-| Phase 1 | `05_testimonials.csv` | Đánh giá khách hàng |
-| Phase 1 | `06_articles.csv` | Bài viết Blog |
-| Phase 2 | `single-types/global.json` | Navbar, Footer toàn trang |
-| Phase 2 | `single-types/blog-page.json` | Layout trang /blog |
-| Phase 2 | `single-types/product-page.json` | Layout trang /products |
-| Phase 3 | `pages/home.json` | Homepage (Hero, Features, Pricing...) |
-| Phase 3 | `blocks/articles.json` | Nội dung chi tiết từng bài viết |
+| Phase   | File                             | Nội dung                              |
+| :------ | :------------------------------- | :------------------------------------ |
+| Phase 0 | `00_logos.csv`                   | Logo thương hiệu _(image required)_   |
+| Phase 1 | `01_categories.csv`              | Danh mục                              |
+| Phase 1 | `02_products.csv`                | Sản phẩm                              |
+| Phase 1 | `03_plans.csv`                   | Gói dịch vụ / Pricing                 |
+| Phase 1 | `04_faqs.csv`                    | Câu hỏi thường gặp                    |
+| Phase 1 | `05_testimonials.csv`            | Đánh giá khách hàng                   |
+| Phase 1 | `06_articles.csv`                | Bài viết Blog                         |
+| Phase 2 | `single-types/global.json`       | Navbar, Footer toàn trang             |
+| Phase 2 | `single-types/blog-page.json`    | Layout trang /blog                    |
+| Phase 2 | `single-types/product-page.json` | Layout trang /products                |
+| Phase 3 | `pages/home.json`                | Homepage (Hero, Features, Pricing...) |
+| Phase 3 | `blocks/articles.json`           | Nội dung chi tiết từng bài viết       |
 
 ---
 
@@ -103,9 +104,9 @@ company,image_src
 "Startup XYZ","https://example.com/logo.png"
 ```
 
-| Cột | Mô tả |
-|:----|:------|
-| `company` | Tên công ty |
+| Cột         | Mô tả                                                      |
+| :---------- | :--------------------------------------------------------- |
+| `company`   | Tên công ty                                                |
 | `image_src` | HTTPS URL **hoặc** tên file trong `strapi/public/uploads/` |
 
 ---
@@ -156,11 +157,11 @@ title,slug,description,category_name,image_url,locale,published
 
 Script hỗ trợ **3 cách cung cấp ảnh** cho các cột `image_url` / `image_src`:
 
-| Cách | Ví dụ | Hoạt động như thế nào |
-|:-----|:------|:----------------------|
+| Cách          | Ví dụ                                   | Hoạt động như thế nào                |
+| :------------ | :-------------------------------------- | :----------------------------------- |
 | **HTTPS URL** | `https://images.unsplash.com/photo.jpg` | Download từ internet → upload Strapi |
-| **Tên file** | `logo.png` | Tìm trong `strapi/public/uploads/` |
-| **Đường dẫn** | `assets/logo.png` | Resolve từ thư mục chạy script |
+| **Tên file**  | `logo.png`                              | Tìm trong `strapi/public/uploads/`   |
+| **Đường dẫn** | `assets/logo.png`                       | Resolve từ thư mục chạy script       |
 
 ::: info Idempotency — Không duplicate ảnh
 Mỗi lần chạy, script kiểm tra ảnh đã tồn tại trong Media Library chưa. Nếu rồi → **bỏ qua, không upload lại**. Bạn có thể chạy script nhiều lần mà không lo bị trùng lặp.
@@ -179,25 +180,25 @@ SEED_STATIC_DIR=/đường/dẫn/đến/thư/mục/ảnh
 
 ::: details Xem đầy đủ cấu trúc Collection Types
 
-| Content Type | Fields | Relations |
-|:-------------|:-------|:----------|
-| **Logo** | `company`, `image` *(required)* | — |
-| **Category** | `name`, `locale` | → Products, Articles |
-| **Product** | `name`, `slug`, `description`, `price`, `featured`, `images`, `perks` | → Categories, Plans |
-| **Plan** | `name`, `price`, `sub_text`, `featured`, `CTA`, `perks` | → Product |
-| **FAQ** | `question`, `answer` | — |
-| **Testimonial** | `text`, `user{firstname, lastname, job, image}` | — |
-| **Article** | `title`, `slug`, `description`, `content`, `image`, `seo` | → Categories |
-| **Page** | `slug`, `seo`, `dynamic_zone` | — |
+| Content Type    | Fields                                                                | Relations            |
+| :-------------- | :-------------------------------------------------------------------- | :------------------- |
+| **Logo**        | `company`, `image` _(required)_                                       | —                    |
+| **Category**    | `name`, `locale`                                                      | → Products, Articles |
+| **Product**     | `name`, `slug`, `description`, `price`, `featured`, `images`, `perks` | → Categories, Plans  |
+| **Plan**        | `name`, `price`, `sub_text`, `featured`, `CTA`, `perks`               | → Product            |
+| **FAQ**         | `question`, `answer`                                                  | —                    |
+| **Testimonial** | `text`, `user{firstname, lastname, job, image}`                       | —                    |
+| **Article**     | `title`, `slug`, `description`, `content`, `image`, `seo`             | → Categories         |
+| **Page**        | `slug`, `seo`, `dynamic_zone`                                         | —                    |
 
 :::
 
 ::: details Xem đầy đủ cấu trúc Single Types
 
-| Single Type | Fields |
-|:------------|:-------|
-| **Global** | `navbar{logo, links}`, `footer{logo, description, copyright, links}` |
-| **Blog-page** | `heading`, `sub_heading`, `seo`, `dynamic_zone` |
-| **Product-page** | `heading`, `sub_heading`, `seo`, `dynamic_zone` |
+| Single Type      | Fields                                                               |
+| :--------------- | :------------------------------------------------------------------- |
+| **Global**       | `navbar{logo, links}`, `footer{logo, description, copyright, links}` |
+| **Blog-page**    | `heading`, `sub_heading`, `seo`, `dynamic_zone`                      |
+| **Product-page** | `heading`, `sub_heading`, `seo`, `dynamic_zone`                      |
 
 :::

@@ -30,38 +30,38 @@ Khi sửa file ở cột trái, cần kiểm tra/cập nhật các files ở c�
 
 ### Strapi Layer
 
-| File Changed | Files Impacted |
-| --- | --- |
-| `strapi/src/api/{name}/content-types/{name}/schema.json` | → Populate middleware, Next.js types, Next.js components, Seed data |
-| `strapi/src/api/{name}/middlewares/{name}-populate.ts` | → Next.js data fetching (shapes API response) |
-| `strapi/src/components/dynamic-zone/{name}.json` | → Page/Blog-Page/Product-Page schemas, Populate middlewares, `manager.tsx`, DZ React component |
-| `strapi/src/components/shared/{name}.json` | → Content types using this component, Populate middlewares, Next.js types |
-| `strapi/config/admin.ts` | → Preview URL mapping, Next.js `/api/preview` |
-| `strapi/config/plugins.ts` | → Swagger docs availability |
+| File Changed                                             | Files Impacted                                                                                 |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `strapi/src/api/{name}/content-types/{name}/schema.json` | → Populate middleware, Next.js types, Next.js components, Seed data                            |
+| `strapi/src/api/{name}/middlewares/{name}-populate.ts`   | → Next.js data fetching (shapes API response)                                                  |
+| `strapi/src/components/dynamic-zone/{name}.json`         | → Page/Blog-Page/Product-Page schemas, Populate middlewares, `manager.tsx`, DZ React component |
+| `strapi/src/components/shared/{name}.json`               | → Content types using this component, Populate middlewares, Next.js types                      |
+| `strapi/config/admin.ts`                                 | → Preview URL mapping, Next.js `/api/preview`                                                  |
+| `strapi/config/plugins.ts`                               | → Swagger docs availability                                                                    |
 
 ### Next.js Layer
 
-| File Changed | Files Impacted |
-| --- | --- |
-| `next/lib/strapi/client.ts` | → ALL data fetching across ALL pages |
-| `next/lib/utils.ts` | → ALL components using `cn()`, `API_URL` |
-| `next/components/dynamic-zone/manager.tsx` | → ALL pages with dynamic zones |
-| `next/types/types.ts` | → ALL components consuming these types |
-| `next/i18n.config.ts` | → Route generation, locale switching, layout |
-| `next/next.config.mjs` | → Image domains, rewrites, redirects |
-| `next/tailwind.config.ts` | → ALL CSS styling |
-| `next/app/[locale]/layout.tsx` | → ALL pages (global layout) |
-| `next/context/cart-context.tsx` | → Product page, cart modal |
-| `next/app/context/SlugContext.tsx` | → LocaleSwitcher, all pages setting slugs |
+| File Changed                               | Files Impacted                               |
+| ------------------------------------------ | -------------------------------------------- |
+| `next/lib/strapi/client.ts`                | → ALL data fetching across ALL pages         |
+| `next/lib/utils.ts`                        | → ALL components using `cn()`, `API_URL`     |
+| `next/components/dynamic-zone/manager.tsx` | → ALL pages with dynamic zones               |
+| `next/types/types.ts`                      | → ALL components consuming these types       |
+| `next/i18n.config.ts`                      | → Route generation, locale switching, layout |
+| `next/next.config.mjs`                     | → Image domains, rewrites, redirects         |
+| `next/tailwind.config.ts`                  | → ALL CSS styling                            |
+| `next/app/[locale]/layout.tsx`             | → ALL pages (global layout)                  |
+| `next/context/cart-context.tsx`            | → Product page, cart modal                   |
+| `next/app/context/SlugContext.tsx`         | → LocaleSwitcher, all pages setting slugs    |
 
 ### Infrastructure
 
-| File Changed | Files Impacted |
-| --- | --- |
-| `.env` / `.env.example` | → Docker Compose, Strapi config, Next.js config |
-| `compose.yml` | → Dev workflow, port mappings |
-| `compose.prod.yml` | → Production deployment |
-| `nginx/conf.d/default.conf` | → URL routing, proxy rules |
+| File Changed                | Files Impacted                                  |
+| --------------------------- | ----------------------------------------------- |
+| `.env` / `.env.example`     | → Docker Compose, Strapi config, Next.js config |
+| `compose.yml`               | → Dev workflow, port mappings                   |
+| `compose.prod.yml`          | → Production deployment                         |
+| `nginx/conf.d/default.conf` | → URL routing, proxy rules                      |
 
 ---
 

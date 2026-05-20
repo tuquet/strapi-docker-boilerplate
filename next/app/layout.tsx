@@ -35,7 +35,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Preview />
-          <Suspense fallback={<RootLoading />}>{children}</Suspense>
+        <Suspense fallback={<RootLoading />}>{children}</Suspense>
       </body>
     </html>
   );

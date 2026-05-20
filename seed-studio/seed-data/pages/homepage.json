@@ -27,8 +27,16 @@
       "ray_card": {
         "title": "Lightning Fast",
         "description": "Sub-100ms response times with edge-optimized infrastructure.",
-        "before_ray_items": { "item_1": "99.99%", "item_2": "Uptime", "item_3": "SLA" },
-        "after_ray_items": { "item_1": "<100ms", "item_2": "Response", "item_3": "Time" },
+        "before_ray_items": {
+          "item_1": "99.99%",
+          "item_2": "Uptime",
+          "item_3": "SLA"
+        },
+        "after_ray_items": {
+          "item_1": "<100ms",
+          "item_2": "Response",
+          "item_3": "Time"
+        },
         "span": "one"
       },
       "graph_card": {
@@ -53,9 +61,18 @@
       "heading": "Get started in 3 easy steps",
       "sub_heading": "From sign-up to insights in under 5 minutes.",
       "steps": [
-        { "title": "Create your account", "description": "Sign up for free in seconds. No credit card required." },
-        { "title": "Connect your data", "description": "Integrate your existing tools with our one-click connectors or REST API." },
-        { "title": "Get actionable insights", "description": "Start seeing real-time analytics and automated reports immediately." }
+        {
+          "title": "Create your account",
+          "description": "Sign up for free in seconds. No credit card required."
+        },
+        {
+          "title": "Connect your data",
+          "description": "Integrate your existing tools with our one-click connectors or REST API."
+        },
+        {
+          "title": "Get actionable insights",
+          "description": "Start seeing real-time analytics and automated reports immediately."
+        }
       ]
     },
     {

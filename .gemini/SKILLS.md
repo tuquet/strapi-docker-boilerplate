@@ -8,14 +8,14 @@
 
 **LaunchPad CMS Fullstack** là nền tảng Headless CMS chuẩn B2B SaaS Enterprise, kết hợp:
 
-| Layer          | Tech              | Version  | Thư mục  | Port |
-| -------------- | ----------------- | -------- | -------- | ---- |
-| **Frontend**   | Next.js (App Router) | ^16.0.0  | `next/`  | 3000 |
-| **Backend**    | Strapi 5          | 5.46.0   | `strapi/`| 1337 |
-| **Database**   | PostgreSQL        | 16       | Docker   | 54321|
-| **Seed Studio**| Svelte 5 + Hono   | —        | `seed-studio/` | 4000 |
-| **Docs**       | VitePress         | 1.6.4    | `docs/`  | —    |
-| **Proxy**      | Nginx             | alpine   | `nginx/` | 80/443 |
+| Layer           | Tech                 | Version | Thư mục        | Port   |
+| --------------- | -------------------- | ------- | -------------- | ------ |
+| **Frontend**    | Next.js (App Router) | ^16.0.0 | `next/`        | 3000   |
+| **Backend**     | Strapi 5             | 5.46.0  | `strapi/`      | 1337   |
+| **Database**    | PostgreSQL           | 16      | Docker         | 54321  |
+| **Seed Studio** | Svelte 5 + Hono      | —       | `seed-studio/` | 4000   |
+| **Docs**        | VitePress            | 1.6.4   | `docs/`        | —      |
+| **Proxy**       | Nginx                | alpine  | `nginx/`       | 80/443 |
 
 **Package Manager:** Yarn 4 (Corepack) — KHÔNG sử dụng npm/pnpm.
 
@@ -29,7 +29,7 @@
 launchpad-cms-fullstack/
 ├── next/                  # Next.js 16 Frontend (App Router, RSC)
 │   ├── app/               # Route handlers & pages
-│   │   ├── [locale]/      # i18n: en, fr
+│   │   ├── [locale]/      # i18n: en, vi
 │   │   │   ├── (marketing)/   # Route group: homepage, slug pages
 │   │   │   ├── blog/          # Blog listing & detail
 │   │   │   ├── products/      # Product listing & detail
@@ -89,13 +89,13 @@ launchpad-cms-fullstack/
 
 ### 3.4 Component Conventions (Next.js)
 
-| Quy tắc | Mô tả |
-| --- | --- |
+| Quy tắc                        | Mô tả                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------- |
 | **Server Components mặc định** | Chỉ thêm `'use client'` khi cần interactivity (animations, state, effects) |
-| **Next.js 16 `'use cache'`** | Sử dụng `cacheLife('minutes')` + `cacheTag()` cho Strapi data fetching |
-| **Dynamic imports** | Dynamic Zone components dùng `next/dynamic` để code-split |
-| **Naming** | PascalCase cho components, camelCase cho utils/hooks, kebab-case cho files |
-| **`cn()` helper** | Dùng `cn()` từ `lib/utils.ts` (clsx + tailwind-merge) cho class merging |
+| **Next.js 16 `'use cache'`**   | Sử dụng `cacheLife('minutes')` + `cacheTag()` cho Strapi data fetching     |
+| **Dynamic imports**            | Dynamic Zone components dùng `next/dynamic` để code-split                  |
+| **Naming**                     | PascalCase cho components, camelCase cho utils/hooks, kebab-case cho files |
+| **`cn()` helper**              | Dùng `cn()` từ `lib/utils.ts` (clsx + tailwind-merge) cho class merging    |
 
 ### 3.5 Styling (Tailwind CSS 3)
 
@@ -113,25 +113,25 @@ launchpad-cms-fullstack/
 
 **Collection Types (9):**
 
-| Content Type | i18n | Draft | Key Relations | Custom Middleware |
-| --- | --- | --- | --- | --- |
-| `Article` | ✅ | ✅ | categories (M2M), image | `article-populate` |
-| `Category` | ✅ | ❌ | product (M2O), articles (M2M) | — |
-| `FAQ` | ✅ | ❌ | — | — |
-| `Logo` | ❌ | ❌ | image (required) | — |
-| `Page` | ✅ | ✅ | dynamic_zone (10 DZ types) | `page-populate` |
-| `Plan` | ✅ | ✅ | product (M2O), perks, CTA | — |
-| `Product` | ✅ | ✅ | plans (O2M), categories (O2M), images | `product-populate` |
-| `Redirection` | ❌ | ✅ | source → destination | — |
-| `Testimonial` | ✅ | ✅ | user component | — |
+| Content Type  | i18n | Draft | Key Relations                         | Custom Middleware  |
+| ------------- | ---- | ----- | ------------------------------------- | ------------------ |
+| `Article`     | ✅   | ✅    | categories (M2M), image               | `article-populate` |
+| `Category`    | ✅   | ❌    | product (M2O), articles (M2M)         | —                  |
+| `FAQ`         | ✅   | ❌    | —                                     | —                  |
+| `Logo`        | ❌   | ❌    | image (required)                      | —                  |
+| `Page`        | ✅   | ✅    | dynamic_zone (10 DZ types)            | `page-populate`    |
+| `Plan`        | ✅   | ✅    | product (M2O), perks, CTA             | —                  |
+| `Product`     | ✅   | ✅    | plans (O2M), categories (O2M), images | `product-populate` |
+| `Redirection` | ❌   | ✅    | source → destination                  | —                  |
+| `Testimonial` | ✅   | ✅    | user component                        | —                  |
 
 **Single Types (3):**
 
-| Single Type | i18n | Key Components | Custom Middleware |
-| --- | --- | --- | --- |
-| `Global` | ✅ | navbar, footer, seo | `global-populate` |
-| `Blog Page` (/blog) | ✅ | seo, heading, dynamic_zone | `blog-page-populate` |
-| `Product Page` (/products) | ✅ | seo, heading, featured/popular sections, dynamic_zone | `product-page-populate` |
+| Single Type                | i18n | Key Components                                        | Custom Middleware       |
+| -------------------------- | ---- | ----------------------------------------------------- | ----------------------- |
+| `Global`                   | ✅   | navbar, footer, seo                                   | `global-populate`       |
+| `Blog Page` (/blog)        | ✅   | seo, heading, dynamic_zone                            | `blog-page-populate`    |
+| `Product Page` (/products) | ✅   | seo, heading, featured/popular sections, dynamic_zone | `product-page-populate` |
 
 ### 4.2 Entity Relationships
 
@@ -155,13 +155,13 @@ Global:
 
 ### 4.3 Components (32 total)
 
-| Namespace | Count | Components |
-| --- | --- | --- |
-| `dynamic-zone.*` | 12 | hero, features, cta, testimonials, how-it-works, brands, pricing, launches, faq, form-next-to-section, related-articles, related-products |
-| `shared.*` | 10 | seo, button, link, perks, user, steps, form, section, launches, social-media-icon-links |
-| `cards.*` | 4 | globe-card, ray-card, graph-card, social-media-card |
-| `items.*` | 4 | input, ray-items, graph-card-top-items, left-navbar-items |
-| `global.*` | 2 | navbar, footer |
+| Namespace        | Count | Components                                                                                                                                |
+| ---------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `dynamic-zone.*` | 12    | hero, features, cta, testimonials, how-it-works, brands, pricing, launches, faq, form-next-to-section, related-articles, related-products |
+| `shared.*`       | 10    | seo, button, link, perks, user, steps, form, section, launches, social-media-icon-links                                                   |
+| `cards.*`        | 4     | globe-card, ray-card, graph-card, social-media-card                                                                                       |
+| `items.*`        | 4     | input, ray-items, graph-card-top-items, left-navbar-items                                                                                 |
+| `global.*`       | 2     | navbar, footer                                                                                                                            |
 
 ### 4.4 Populate Middleware Pattern
 
@@ -199,29 +199,30 @@ File: `next/components/dynamic-zone/manager.tsx` (`'use client'`)
 
 Mapping `__component` string → React component via `next/dynamic`:
 
-| Strapi `__component` | React Component |
-| --- | --- |
-| `dynamic-zone.hero` | `Hero` |
-| `dynamic-zone.features` | `Features` |
-| `dynamic-zone.testimonials` | `Testimonials` |
-| `dynamic-zone.how-it-works` | `HowItWorks` |
-| `dynamic-zone.brands` | `Brands` |
-| `dynamic-zone.pricing` | `Pricing` |
-| `dynamic-zone.launches` | `Launches` |
-| `dynamic-zone.cta` | `CTA` |
+| Strapi `__component`                | React Component     |
+| ----------------------------------- | ------------------- |
+| `dynamic-zone.hero`                 | `Hero`              |
+| `dynamic-zone.features`             | `Features`          |
+| `dynamic-zone.testimonials`         | `Testimonials`      |
+| `dynamic-zone.how-it-works`         | `HowItWorks`        |
+| `dynamic-zone.brands`               | `Brands`            |
+| `dynamic-zone.pricing`              | `Pricing`           |
+| `dynamic-zone.launches`             | `Launches`          |
+| `dynamic-zone.cta`                  | `CTA`               |
 | `dynamic-zone.form-next-to-section` | `FormNextToSection` |
-| `dynamic-zone.faq` | `FAQ` |
-| `dynamic-zone.related-products` | `RelatedProducts` |
-| `dynamic-zone.related-articles` | `RelatedArticles` |
+| `dynamic-zone.faq`                  | `FAQ`               |
+| `dynamic-zone.related-products`     | `RelatedProducts`   |
+| `dynamic-zone.related-articles`     | `RelatedArticles`   |
 
 Khi thêm Dynamic Zone mới: phải update CÙNG LÚC cả 3 nơi:
+
 1. **Strapi:** Component schema + thêm vào `pluginOptions.dynamic-zone` trong page/blog-page/product-page
 2. **Strapi Middleware:** Thêm populate rule trong các `*-populate.ts`
 3. **Next.js:** Tạo React component + đăng ký trong `manager.tsx`
 
 ### 5.3 i18n System
 
-- **Locales:** `en`, `fr` (config tại `next/i18n.config.ts`)
+- **Locales:** `en`, `vi` (config tại `next/i18n.config.ts`)
 - **Route pattern:** `/[locale]/...` — all pages wrapped by locale segment
 - **SlugContext:** Client context tracking localized slugs cho `LocaleSwitcher`
 - **Strapi i18n:** Hầu hết content types đều bật i18n — data trả về kèm `localizations[]`
@@ -237,6 +238,7 @@ Strapi Admin → "Preview" button
 ```
 
 URL mapping (config tại `strapi/config/admin.ts`):
+
 ```
 page (slug=homepage) → /
 page (other)         → /{slug}
@@ -248,16 +250,16 @@ blog-page            → /blog
 
 ### 5.5 Key Libraries
 
-| Library | Purpose | Usage |
-| --- | --- | --- |
-| `framer-motion` v12 | Animations, transitions | Navbar, cards, modals, decorations |
-| `three` + `@react-three/fiber` | 3D Globe | Features section globe card |
-| `@strapi/client` | Official Strapi SDK | Data fetching |
-| `@strapi/blocks-react-renderer` | Rich text rendering | Article content |
-| `react-fast-marquee` | Auto-scrolling | Testimonials |
-| `next-view-transitions` | View Transitions API | Root layout |
-| `fuzzy-search` | Fuzzy text search | Blog post filtering |
-| `class-variance-authority` | Component variants | Button styles |
+| Library                         | Purpose                 | Usage                              |
+| ------------------------------- | ----------------------- | ---------------------------------- |
+| `framer-motion` v12             | Animations, transitions | Navbar, cards, modals, decorations |
+| `three` + `@react-three/fiber`  | 3D Globe                | Features section globe card        |
+| `@strapi/client`                | Official Strapi SDK     | Data fetching                      |
+| `@strapi/blocks-react-renderer` | Rich text rendering     | Article content                    |
+| `react-fast-marquee`            | Auto-scrolling          | Testimonials                       |
+| `next-view-transitions`         | View Transitions API    | Root layout                        |
+| `fuzzy-search`                  | Fuzzy text search       | Blog post filtering                |
+| `class-variance-authority`      | Component variants      | Button styles                      |
 
 ---
 
@@ -303,6 +305,11 @@ node seed-from-csv.mjs --clean-only # Wipe DB only
 node seed-from-csv.mjs --dry-run    # Preview without API calls
 ```
 
+### 6.5 Nâng cao: Khôi phục Dữ liệu & On-Demand Seeding
+
+- **Khôi phục Backup (`/api/restore-stream` & `/api/backup-preview`):** Seed Studio tích hợp tính năng đọc nội dung file backup `.tar.gz` của Strapi v5, giúp thống kê dữ liệu bên trong (Articles, Categories, Media, Users) và thực thi luồng `strapi import` ngay trên GUI để làm mới database.
+- **Tạo Article Đơn Lẻ (`/api/seed-article`):** Cho phép gọi POST API để tạo nhanh 1 bài viết trong Strapi, sau đó tự động lưu nội dung mới này append vào file `06_articles.csv` để đảm bảo tính nhất quán (persistence).
+
 ---
 
 ## 7. Infrastructure & DevOps
@@ -323,23 +330,23 @@ node seed-from-csv.mjs --dry-run    # Preview without API calls
 
 ### 7.2 Dev vs Prod
 
-| Aspect | Dev (`compose.yml`) | Prod (`compose.prod.yml`) |
-| --- | --- | --- |
-| Build | Build from source | Pull from registry |
-| DB Port | 54321:5432 | 54321:5432 |
-| Nginx Port | 80, 443 | 8000→80, 8443→443 |
-| Strapi | Volume mounts (hot reload) | Immutable image |
-| Next.js | — | `NEXT_PUBLIC_API_URL: http://strapi:1337` |
+| Aspect     | Dev (`compose.yml`)        | Prod (`compose.prod.yml`)                 |
+| ---------- | -------------------------- | ----------------------------------------- |
+| Build      | Build from source          | Pull from registry                        |
+| DB Port    | 54321:5432                 | 54321:5432                                |
+| Nginx Port | 80, 443                    | 8000→80, 8443→443                         |
+| Strapi     | Volume mounts (hot reload) | Immutable image                           |
+| Next.js    | —                          | `NEXT_PUBLIC_API_URL: http://strapi:1337` |
 
 ### 7.3 Scripts
 
-| Script | Command | Purpose |
-| --- | --- | --- |
-| `scripts/install.sh` | `bash scripts/install.sh` | One-click demo setup |
-| `scripts/copy-env.sh` | `bash scripts/copy-env.sh --env dev` | Generate `.env` with random secrets |
-| `scripts/cleanup.sh` | `bash scripts/cleanup.sh` | Docker prune + system cleanup |
-| `scripts/reset.sh` | `bash scripts/reset.sh` | Reset repo (down + remove envs) |
-| `scripts/toggle-seed.sh` | `bash scripts/toggle-seed.sh enable/disable` | Toggle seed flag in envs |
+| Script                   | Command                                      | Purpose                             |
+| ------------------------ | -------------------------------------------- | ----------------------------------- |
+| `scripts/install.sh`     | `bash scripts/install.sh`                    | One-click demo setup                |
+| `scripts/copy-env.sh`    | `bash scripts/copy-env.sh --env dev`         | Generate `.env` with random secrets |
+| `scripts/cleanup.sh`     | `bash scripts/cleanup.sh`                    | Docker prune + system cleanup       |
+| `scripts/reset.sh`       | `bash scripts/reset.sh`                      | Reset repo (down + remove envs)     |
+| `scripts/toggle-seed.sh` | `bash scripts/toggle-seed.sh enable/disable` | Toggle seed flag in envs            |
 
 ### 7.4 VSCode Tasks
 

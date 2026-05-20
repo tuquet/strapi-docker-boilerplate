@@ -25,7 +25,7 @@ function getLocale(request: NextRequest): string | undefined {
     // Bắt lỗi này và trả về ngôn ngữ mặc định thay vì sập server.
     locale = i18n.defaultLocale;
   }
-  
+
   return locale;
 }
 

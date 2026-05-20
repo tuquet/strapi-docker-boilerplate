@@ -336,18 +336,18 @@ import { motion } from 'framer-motion';
 
 ## 5. File Naming Conventions
 
-| Entity | Convention | Example |
-| --- | --- | --- |
-| React Components | `kebab-case.tsx` | `blog-card.tsx`, `hero.tsx` |
-| Pages | `page.tsx` (App Router) | `app/[locale]/blog/page.tsx` |
-| Loading states | `loading.tsx` | `app/[locale]/blog/loading.tsx` |
-| Layouts | `layout.tsx` | `app/[locale]/layout.tsx` |
-| Utils/Libs | `camelCase.ts` | `strapiImage.ts`, `next-metadata.ts` |
-| Types | `types.ts` or `{name}.d.ts` | `types/types.ts`, `three-fiber.d.ts` |
-| Strapi Components | `kebab-case.json` | `shared/seo.json`, `dynamic-zone/hero.json` |
-| Strapi Middlewares | `{content-type}-populate.ts` | `page-populate.ts` |
-| Seed Data | `{order}_{name}.csv` | `01_categories.csv` |
-| Shell Scripts | `kebab-case.sh` | `copy-env.sh` |
+| Entity             | Convention                   | Example                                     |
+| ------------------ | ---------------------------- | ------------------------------------------- |
+| React Components   | `kebab-case.tsx`             | `blog-card.tsx`, `hero.tsx`                 |
+| Pages              | `page.tsx` (App Router)      | `app/[locale]/blog/page.tsx`                |
+| Loading states     | `loading.tsx`                | `app/[locale]/blog/loading.tsx`             |
+| Layouts            | `layout.tsx`                 | `app/[locale]/layout.tsx`                   |
+| Utils/Libs         | `camelCase.ts`               | `strapiImage.ts`, `next-metadata.ts`        |
+| Types              | `types.ts` or `{name}.d.ts`  | `types/types.ts`, `three-fiber.d.ts`        |
+| Strapi Components  | `kebab-case.json`            | `shared/seo.json`, `dynamic-zone/hero.json` |
+| Strapi Middlewares | `{content-type}-populate.ts` | `page-populate.ts`                          |
+| Seed Data          | `{order}_{name}.csv`         | `01_categories.csv`                         |
+| Shell Scripts      | `kebab-case.sh`              | `copy-env.sh`                               |
 
 ---
 
@@ -355,19 +355,18 @@ import { motion } from 'framer-motion';
 
 ```typescript
 // 1. External packages
-import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-// 2. Internal aliases (@/)
-import { cn } from '@/lib/utils';
-import { fetchCollectionType } from '@/lib/strapi';
-import { Container } from '@/components/container';
-import { Heading } from '@/components/elements/heading';
+import { useCallback, useState } from 'react';
 
 // 3. Relative imports
 import { BlogCard } from './blog-card';
 import type { Article } from './types';
+import { Container } from '@/components/container';
+import { Heading } from '@/components/elements/heading';
+import { fetchCollectionType } from '@/lib/strapi';
+// 2. Internal aliases (@/)
+import { cn } from '@/lib/utils';
 ```
 
 ---
@@ -377,7 +376,6 @@ import type { Article } from './types';
 ```typescript
 // Mọi page cần SEO phải dùng shared.seo component trong Strapi
 // và generateMetadataObject() trong Next.js
-
 import { generateMetadataObject } from '@/lib/shared/metadata';
 
 export async function generateMetadata({ params }: LocaleParamsProps) {

@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-import { Container } from '@/components/container';
 import ClientSlugHandler from '../../ClientSlugHandler';
+import { Container } from '@/components/container';
 import { AmbientColor } from '@/components/decorations/ambient-color';
 import DynamicZoneManager from '@/components/dynamic-zone/manager';
 import { SingleProduct } from '@/components/products/single-product';
@@ -41,13 +41,14 @@ export default async function SingleProductPage({
     redirect('/products');
   }
 
-  const localizedSlugs = pageData.localizations?.reduce(
-    (acc: Record<string, string>, localization: any) => {
-      acc[localization.locale] = localization.slug;
-      return acc;
-    },
-    { [locale]: slug }
-  ) || {};
+  const localizedSlugs =
+    pageData.localizations?.reduce(
+      (acc: Record<string, string>, localization: any) => {
+        acc[localization.locale] = localization.slug;
+        return acc;
+      },
+      { [locale]: slug }
+    ) || {};
 
   return (
     <div className="relative overflow-hidden w-full">

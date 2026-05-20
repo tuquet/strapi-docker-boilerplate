@@ -20,7 +20,9 @@ export async function generateMetadata({
   const pageData = await fetchSingleType('blog-page', { locale });
 
   const seo = pageData?.seo;
-  const metadata = seo ? generateMetadataObject(seo) : { title: 'Blog', description: 'Blog page' };
+  const metadata = seo
+    ? generateMetadataObject(seo)
+    : { title: 'Blog', description: 'Blog page' };
   return metadata;
 }
 
@@ -29,14 +31,11 @@ export default async function Blog({ params }: LocaleParamsProps) {
   const pageData = await fetchSingleType('blog-page', {
     locale: locale,
   });
-  
-  const articlesResponse = await fetchCollectionType<Article[]>(
-    'articles',
-    {
-      filters: { locale: { $eq: locale } },
-    }
-  );
-  
+
+  const articlesResponse = await fetchCollectionType<Article[]>('articles', {
+    filters: { locale: { $eq: locale } },
+  });
+
   // Safe array destructuring with fallback to empty array if response is not array
   const safeArticles = Array.isArray(articlesResponse) ? articlesResponse : [];
   const [firstArticle, ...articles] = safeArticles;
@@ -53,8 +52,12 @@ export default async function Blog({ params }: LocaleParamsProps) {
     return (
       <div className="relative py-40 text-center flex flex-col justify-center items-center h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Content Not Found</h1>
-        <p className="text-gray-500 mb-8">It looks like the blog page has not been set up in the CMS.</p>
-        <p className="text-brand">💡 Please run the AI Seeder to populate the database.</p>
+        <p className="text-gray-500 mb-8">
+          It looks like the blog page has not been set up in the CMS.
+        </p>
+        <p className="text-brand">
+          💡 Please run the AI Seeder to populate the database.
+        </p>
       </div>
     );
   }
@@ -84,8 +87,12 @@ export default async function Blog({ params }: LocaleParamsProps) {
           />
         ) : (
           <div className="w-full py-20 text-center border border-dashed border-gray-700 rounded-2xl bg-gray-900/20">
-            <h3 className="text-xl font-bold mb-2 text-gray-300">No articles found</h3>
-            <p className="text-gray-500">Run the LaunchPad Seed Studio to generate articles automatically.</p>
+            <h3 className="text-xl font-bold mb-2 text-gray-300">
+              No articles found
+            </h3>
+            <p className="text-gray-500">
+              Run the LaunchPad Seed Studio to generate articles automatically.
+            </p>
           </div>
         )}
 

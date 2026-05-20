@@ -37,7 +37,7 @@ services:
       APP_KEYS: ${APP_KEYS}
       NODE_ENV: production
     ports:
-      - "1337:1337"
+      - '1337:1337'
     volumes:
       - strapi-uploads:/opt/app/public
     depends_on:
@@ -58,12 +58,12 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      - "54321:5432"
+      - '54321:5432'
     volumes:
       - strapi-data:/var/lib/postgresql/data
     healthcheck:
       test:
-        ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+        ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -80,7 +80,7 @@ services:
       NEXT_PUBLIC_API_URL: http://strapi:1337
       NODE_ENV: production
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - strapi
 
@@ -92,8 +92,8 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "8000:80"
-      - "8443:443"
+      - '8000:80'
+      - '8443:443'
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl

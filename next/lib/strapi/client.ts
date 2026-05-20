@@ -2,6 +2,7 @@ import { strapi } from '@strapi/client';
 import type { API, Config } from '@strapi/client';
 import { cacheLife, cacheTag, revalidateTag } from 'next/cache';
 import { draftMode } from 'next/headers';
+
 import { API_URL } from '../utils';
 
 export class StrapiError extends Error {
