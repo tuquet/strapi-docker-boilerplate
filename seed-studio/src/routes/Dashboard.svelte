@@ -96,9 +96,13 @@
 
   // --- Data fetching ---
   async function fetchStats(): Promise<void> {
+    if (!apiToken) {
+      needsToken = true;
+      isLoadingStats = false;
+      return;
+    }
     try {
-      const tokenQuery = apiToken ? `?token=${encodeURIComponent(apiToken)}` : '';
-      const res = await fetch(`/api/content-stats${tokenQuery}`);
+      const res = await fetch(`/api/content-stats?token=${encodeURIComponent(apiToken)}`);
       if (res.status === 401) {
         needsToken = true;
         return;
