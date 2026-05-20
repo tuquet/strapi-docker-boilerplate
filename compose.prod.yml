@@ -43,6 +43,8 @@ services:
     depends_on:
       launchpad-db:
         condition: service_healthy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # ============================================
   # PostgreSQL Database
@@ -83,6 +85,8 @@ services:
       - '3000:3000'
     depends_on:
       - strapi
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   # ============================================
   # Nginx Reverse Proxy
