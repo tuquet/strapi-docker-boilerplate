@@ -13,6 +13,15 @@ LaunchPad là một bộ giải pháp **Headless CMS** sẵn sàng cho Productio
 | **Database**      | PostgreSQL | Lưu trữ dữ liệu                |
 | **Proxy**         | Nginx      | Điều phối traffic ra internet  |
 
+```mermaid
+flowchart LR
+  User["👤 Người dùng"] --> Nginx["🔀 Nginx"]
+  Nginx --> NextJS["⚡ Next.js"]
+  NextJS --> Strapi["⚙️ Strapi"]
+  Strapi --> DB[("🗄️ PostgreSQL")]
+  Admin["👨‍💼 Quản trị"] --> Strapi
+```
+
 Tất cả được đóng gói bằng **Docker Compose** — bạn không cần cài Node.js, PostgreSQL hay bất cứ thứ gì khác ngoài Docker.
 
 ## Yêu Cầu Hệ Thống
@@ -34,6 +43,15 @@ Trước khi bắt đầu, hãy đảm bảo máy tính của bạn đã có:
 ---
 
 ## Cài Đặt Nhanh
+
+```mermaid
+flowchart LR
+  A["Clone repo"] --> B["Chạy install.sh"]
+  B --> C["Tạo .env"]
+  C --> D["Build & Start"]
+  D --> E["Seed dữ liệu"]
+  E --> F["✅ Hoàn tất!"]
+```
 
 ### Bước 1 — Clone dự án
 

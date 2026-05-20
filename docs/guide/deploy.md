@@ -25,18 +25,11 @@ Hãy chuẩn bị đủ những thứ sau:
 
 ## Kiến Trúc Triển Khai
 
-```
-┌──────────────┐     push image     ┌─────────────────┐
-│  Máy Local   │ ─────────────────► │ Docker Registry │
-│  (Dev)       │                    │ (Private)       │
-└──────────────┘                    └─────────────────┘
-       │ build                             │
-       │                                   │ pull image
-       ▼                                   ▼
-   Code + Docker              ┌────────────────────────┐
-   Images (Next.js            │     Máy chủ VPS        │
-   + Strapi)                  │  docker compose up -d  │
-                              └────────────────────────┘
+```mermaid
+flowchart LR
+  Local["💻 Máy Local"] -->|"build & push"| Registry["📦 Docker Registry"]
+  Registry -->|"pull image"| VPS["🖥️ VPS Production"]
+  VPS -->|"docker compose up -d"| Running["✅ Hệ thống chạy"]
 ```
 
 **Luồng làm việc mỗi khi update:**
@@ -44,6 +37,22 @@ Hãy chuẩn bị đủ những thứ sau:
 1. Sửa code trên máy Local
 2. Build Docker Image và Push lên Registry
 3. VPS Pull Image mới → Restart container
+
+```mermaid
+sequenceDiagram
+  participant Dev as 💻 Developer
+  participant Reg as 📦 Registry
+  participant WT as 🔄 Watchtower
+  participant VPS as 🖥️ VPS
+  Dev->>Reg: docker push image
+  loop Mỗi 2 phút
+    WT->>Reg: Kiểm tra image mới?
+  end
+  Reg-->>WT: Phát hiện image mới!
+  WT->>VPS: Pull image mới
+  WT->>VPS: Restart container
+  Note over VPS: Zero-Downtime ✅
+```
 
 ---
 
@@ -185,6 +194,29 @@ Container Nginx của CMS đẩy website ra **cổng 8000** (không chiếm cổ
 **4.** Tab **SSL** → Enable SSL (Let's Encrypt) → Điền Email → Bấm **Issue**
 
 Sau vài giây, domain của bạn sẽ tự động có HTTPS! 🎉
+
+---
+
+## Chạy Không Có Domain (Dùng IP)
+
+::: tip Bạn chưa có tên miền?
+Bạn hoàn toàn có thể chạy LaunchPad chỉ với địa chỉ IP. Domain là tùy chọn nâng cấp sau.
+:::
+
+Khi chưa có domain, truy cập hệ thống qua IP:
+
+| Dịch vụ | URL |
+|---------|-----|
+| Website | `http://<IP_VPS>:8000` |
+| Strapi Admin | `http://<IP_VPS>:1337/admin` |
+| Registry UI | `http://<IP_VPS>:5001` |
+| Nginx UI | `http://<IP_VPS>` (port 80) |
+
+Khi sẵn sàng nâng cấp lên domain:
+1. Mua tên miền và trỏ DNS A Record về IP VPS
+2. Trong Nginx UI, tạo Site mới cho từng subdomain
+3. Bật SSL (Let's Encrypt) cho từng subdomain
+4. Xem chi tiết tại [Hạ Tầng Registry Stack](./registry-stack)
 
 ---
 

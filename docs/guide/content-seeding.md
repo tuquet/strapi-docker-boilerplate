@@ -75,6 +75,18 @@ node scripts/seed-from-csv.mjs --clean
 
 ## Thứ Tự Seed & Nội Dung Hỗ Trợ
 
+```mermaid
+flowchart LR
+  P0["Phase 0\nLogos"] --> P1["Phase 1\nCollections"]
+  P1 --> P2["Phase 2\nSingle Types"]
+  P2 --> P3["Phase 3\nPages & Blocks"]
+
+  P1a["Categories"] --> P1
+  P1b["Products"] --> P1
+  P1c["Articles"] --> P1
+  P1d["FAQs"] --> P1
+```
+
 Script tự động seed **12 loại nội dung** theo đúng thứ tự phụ thuộc:
 
 | Phase   | File                             | Nội dung                              |

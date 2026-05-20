@@ -32,6 +32,14 @@ features:
   - icon: 🚀
     title: Zero-Build trên VPS
     details: Build code tại máy Local, VPS chỉ Pull và Run. Server cấu hình thấp (1–2GB RAM) vẫn chạy mượt mà.
+
+  - icon: 🔄
+    title: Auto-Deploy (Watchtower)
+    details: Watchtower tự động kiểm tra phiên bản mới mỗi 2 phút. Push code xong là VPS tự cập nhật — không cần SSH vào server.
+
+  - icon: 🌱
+    title: AI Content Seeding
+    details: Nạp nội dung thật vào CMS tự động bằng AI thông qua giao diện Seed Studio hoặc CLI script. Hỗ trợ 12 loại nội dung.
 ---
 
 <style>

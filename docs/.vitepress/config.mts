@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress';
+import { withMermaid } from 'vitepress-plugin-mermaid';
 
-export default defineConfig({
+export default withMermaid(defineConfig({
   // ─── Site Metadata ────────────────────────────────────────────────────────
   // base: GitHub Pages host tại /<repo-name>/ → set VITEPRESS_BASE trong CI
   // Local dev không cần set (mặc định là "/")
@@ -61,6 +62,7 @@ export default defineConfig({
         text: '🚀 Bắt Đầu',
         items: [
           { text: 'Giới thiệu & Cài đặt', link: '/guide/getting-started' },
+          { text: 'Kiến Trúc Hệ Thống', link: '/guide/architecture' },
         ],
       },
       {
@@ -74,6 +76,7 @@ export default defineConfig({
         text: '🌐 Vận Hành',
         items: [
           { text: 'Triển khai lên VPS', link: '/guide/deploy' },
+          { text: 'Hạ Tầng Registry Stack', link: '/guide/registry-stack' },
           { text: 'Nâng cấp Strapi', link: '/guide/upgrade-strapi' },
         ],
       },
@@ -149,4 +152,9 @@ export default defineConfig({
     theme: { light: 'github-light', dark: 'github-dark' },
     lineNumbers: true,
   },
-});
+
+  // ─── Mermaid Options ──────────────────────────────────────────────────────
+  mermaid: {
+    theme: 'default',
+  },
+}));

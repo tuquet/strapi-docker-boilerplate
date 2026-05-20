@@ -25,20 +25,20 @@ Truy cập: **Strapi** → http://localhost:1337/admin | **Next.js** → http://
 
 Tùy vào công việc của bạn, hãy chọn mô hình phù hợp:
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Cách 1: Fullstack (khuyên dùng cho hầu hết mọi người)       │
-│                                                              │
-│  [Máy bạn]  Next.js ←→ Strapi  │  [Docker]  PostgreSQL      │
-│             (hot-reload)        │  (chỉ database)            │
-└──────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────┐
-│  Cách 2: Frontend-only (cho team chuyên Frontend)            │
-│                                                              │
-│  [Máy bạn]  Next.js  │  [Docker]  Strapi + PostgreSQL        │
-│             (UI only) │  (toàn bộ backend trong Docker)      │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph way1["✅ Cách 1: Fullstack — Khuyên dùng"]
+    direction LR
+    Dev1["💻 Máy bạn"] --> NJ1["Next.js\nhot-reload"]
+    Dev1 --> ST1["Strapi\nhot-reload"]
+    Docker1[("🐳 Docker")] --> DB1[("PostgreSQL")]
+  end
+  subgraph way2["Cách 2: Frontend-only"]
+    direction LR
+    Dev2["💻 Máy bạn"] --> NJ2["Next.js"]
+    Docker2[("🐳 Docker")] --> ST2["Strapi"]
+    Docker2 --> DB2[("PostgreSQL")]
+  end
 ```
 
 ---
