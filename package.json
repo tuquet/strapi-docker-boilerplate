@@ -26,8 +26,8 @@
     "docs:dev": "cd docs && yarn dev",
     "docs:build": "cd docs && yarn build",
     "docs:preview": "cd docs && yarn preview",
-    "seed:disable": "npx -y tsx scripts/toggle-seed.mts disable",
-    "seed:enable": "npx -y tsx scripts/toggle-seed.mts enable",
+    "seed:disable": "bash scripts/toggle-seed.sh disable",
+    "seed:enable": "bash scripts/toggle-seed.sh enable",
     "seed:ui": "cd seed-studio && concurrently -n \"vite,server\" -c \"cyan,magenta\" \"yarn dev\" \"npm run server\""
   },
   "dependencies": {
