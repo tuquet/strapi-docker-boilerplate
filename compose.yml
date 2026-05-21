@@ -1,4 +1,25 @@
 services:
+  launchpad-db:
+    container_name: launchpad-db
+    image: postgres:16-alpine
+    platform: linux/amd64
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - '54321:5432'
+    volumes:
+      - strapi-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   strapi:
     container_name: strapi
     build:
@@ -40,27 +61,6 @@ services:
     depends_on:
       launchpad-db:
         condition: service_healthy
-
-  launchpad-db:
-    container_name: launchpad-db
-    image: postgres:16-alpine
-    platform: linux/amd64
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
-    ports:
-      - '54321:5432'
-    volumes:
-      - strapi-data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   nextjs:
     container_name: nextjs

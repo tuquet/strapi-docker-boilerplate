@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "🚀 [Dev] Start All",
+      "label": "[Dev] Start All",
       "detail": "Khởi chạy đồng thời Next.js và Strapi",
       "type": "shell",
       "command": "yarn dev",
@@ -12,7 +12,7 @@
       "icon": { "id": "rocket", "color": "terminal.ansiYellow" }
     },
     {
-      "label": "🧹 [Dev] Clean Workspace",
+      "label": "[Dev] Clean Workspace",
       "detail": "Dọn dẹp cache Next.js, build Strapi và kill port bị treo",
       "type": "shell",
       "command": "yarn clean:full",
@@ -21,7 +21,7 @@
       "icon": { "id": "trash", "color": "terminal.ansiRed" }
     },
     {
-      "label": "🌱 [Dev] Seed Studio UI",
+      "label": "[Dev] Seed Studio",
       "detail": "Mở giao diện UI quản lý Seeding và Backup",
       "type": "shell",
       "command": "yarn seed:ui",
@@ -30,7 +30,7 @@
       "icon": { "id": "code", "color": "terminal.ansiCyan" }
     },
     {
-      "label": "🐳 [Docker] Local DB Up",
+      "label": "[Docker] Local DB Up",
       "detail": "Khởi động container cơ sở dữ liệu",
       "type": "shell",
       "command": "yarn setup:db",
@@ -39,7 +39,7 @@
       "icon": { "id": "database", "color": "terminal.ansiBlue" }
     },
     {
-      "label": "🚢 [Deploy] Build & Push Images",
+      "label": "[Deploy] Build & Push Images",
       "detail": "Đóng gói và đẩy Docker image lên Registry (Next.js & Strapi)",
       "type": "shell",
       "command": "yarn deploy ${input:registry} ${input:tag}",
