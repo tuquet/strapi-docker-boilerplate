@@ -28,7 +28,8 @@
     "docs:preview": "cd docs && yarn preview",
     "seed:disable": "bash scripts/toggle-seed.sh disable",
     "seed:enable": "bash scripts/toggle-seed.sh enable",
-    "seed:ui": "cd seed-studio && concurrently -n \"vite,server\" -c \"cyan,magenta\" \"yarn dev\" \"npm run server\""
+    "seed:ui": "cd seed-studio && concurrently -n \"vite,server\" -c \"cyan,magenta\" \"yarn dev\" \"npm run server\"",
+    "deploy": "bash scripts/docker-deploy.sh"
   },
   "dependencies": {
     "@strapi/plugin-documentation": "^5.45.1",

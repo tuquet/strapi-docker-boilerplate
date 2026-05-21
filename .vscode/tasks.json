@@ -2,294 +2,50 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "🚀 cms: dev",
-      "dependsOn": ["📦 strapi: dev", "🌐 next: dev"],
-      "dependsOrder": "parallel",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "rocket",
-        "color": "terminal.ansiYellow"
-      }
-    },
-    {
-      "label": "🐳 docker: db-up",
+      "label": "🚀 [Dev] Start All",
+      "detail": "Khởi chạy đồng thời Next.js và Strapi",
       "type": "shell",
-      "command": "yarn setup",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
+      "command": "yarn dev",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
       "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
+      "icon": { "id": "rocket", "color": "terminal.ansiYellow" }
     },
     {
-      "label": "📦 strapi: dev",
+      "label": "🧹 [Dev] Clean Workspace",
+      "detail": "Dọn dẹp cache Next.js, build Strapi và kill port bị treo",
       "type": "shell",
-      "command": "yarn strapi",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
+      "command": "yarn clean:full",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
       "problemMatcher": [],
-      "icon": {
-        "id": "package",
-        "color": "terminal.ansiYellow"
-      }
+      "icon": { "id": "trash", "color": "terminal.ansiRed" }
     },
     {
-      "label": "🌐 next: dev",
-      "type": "shell",
-      "command": "yarn next",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "globe",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "📖 docs: dev",
-      "type": "shell",
-      "command": "yarn docs:dev",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "book",
-        "color": "terminal.ansiMagenta"
-      }
-    },
-    {
-      "label": "🌱 seed: dev",
+      "label": "🌱 [Dev] Seed Studio UI",
+      "detail": "Mở giao diện UI quản lý Seeding và Backup",
       "type": "shell",
       "command": "yarn seed:ui",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
+      "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": [],
-      "icon": {
-        "id": "code",
-        "color": "terminal.ansiCyan"
-      }
+      "icon": { "id": "code", "color": "terminal.ansiCyan" }
     },
     {
-      "label": "🧹 cms: clean",
+      "label": "🐳 [Docker] Local DB Up",
+      "detail": "Khởi động container cơ sở dữ liệu",
       "type": "shell",
-      "command": "npx kill-port 3000 1337 && yarn clean && npx rimraf next/.next/dev/lock && yarn dev",
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
+      "command": "yarn setup:db",
+      "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": [],
-      "icon": {
-        "id": "trash",
-        "color": "terminal.ansiRed"
-      }
+      "icon": { "id": "database", "color": "terminal.ansiBlue" }
     },
     {
-      "label": "🔑 registry: login",
+      "label": "🚢 [Deploy] Build & Push Images",
+      "detail": "Đóng gói và đẩy Docker image lên Registry (Next.js & Strapi)",
       "type": "shell",
-      "command": "docker login ${input:registry}",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
+      "command": "yarn deploy ${input:registry} ${input:tag}",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
       "problemMatcher": [],
-      "icon": {
-        "id": "key",
-        "color": "terminal.ansiYellow"
-      }
-    },
-    {
-      "label": "🐳 docker: build-strapi",
-      "type": "shell",
-      "command": "docker build -t ${input:registry}/strapi-app:${input:tag} ./strapi",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-build"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🐳 docker: build-next",
-      "type": "shell",
-      "command": "docker build -t ${input:registry}/next-app:${input:tag} ./next",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-build"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🐳 docker: build-all",
-      "dependsOrder": "sequence",
-      "dependsOn": [
-        "🐳 docker: build-strapi",
-        "🐳 docker: build-next"
-      ],
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🐳 registry: push-strapi",
-      "dependsOn": ["🐳 docker: build-strapi"],
-      "type": "shell",
-      "command": "docker push ${input:registry}/strapi-app:${input:tag}",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-build"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🐳 registry: push-next",
-      "dependsOn": ["🐳 docker: build-next"],
-      "type": "shell",
-      "command": "docker push ${input:registry}/next-app:${input:tag}",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-build"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🐳 registry: push-all",
-      "dependsOrder": "sequence",
-      "dependsOn": [
-        "🐳 registry: push-strapi",
-        "🐳 registry: push-next"
-      ],
-      "problemMatcher": [],
-      "icon": {
-        "id": "server-environment",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "🚀 docker compose: local-up",
-      "type": "shell",
-      "command": "docker compose up -d",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-local"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "rocket",
-        "color": "terminal.ansiYellow"
-      }
-    },
-    {
-      "label": "🛑 docker compose: local-down",
-      "type": "shell",
-      "command": "docker compose down",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-local"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "stop",
-        "color": "terminal.ansiRed"
-      }
-    },
-    {
-      "label": "📜 docker compose: local-logs",
-      "type": "shell",
-      "command": "docker compose logs -f",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-local"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "file-text",
-        "color": "terminal.ansiCyan"
-      }
-    },
-    {
-      "label": "🚀 docker compose: prod-up",
-      "type": "shell",
-      "command": "docker compose -f compose.prod.yml pull && docker compose -f compose.prod.yml up -d",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-prod"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "rocket",
-        "color": "terminal.ansiYellow"
-      }
-    },
-    {
-      "label": "🛑 docker compose: prod-down",
-      "type": "shell",
-      "command": "docker compose -f compose.prod.yml down",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-prod"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "stop",
-        "color": "terminal.ansiRed"
-      }
-    },
-    {
-      "label": "📜 docker compose: prod-logs",
-      "type": "shell",
-      "command": "docker compose -f compose.prod.yml logs -f",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "group": "docker-prod"
-      },
-      "problemMatcher": [],
-      "icon": {
-        "id": "file-text",
-        "color": "terminal.ansiCyan"
-      }
+      "icon": { "id": "server-environment", "color": "terminal.ansiMagenta" }
     }
   ],
   "inputs": [
@@ -302,7 +58,7 @@
     {
       "id": "tag",
       "type": "promptString",
-      "description": "Image Tag (e.g. v1, latest, 2024-05-14)",
+      "description": "Image Tag (e.g. v1, latest)",
       "default": "latest"
     }
   ]

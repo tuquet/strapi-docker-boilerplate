@@ -177,7 +177,7 @@ Sau khi push image lên Registry, bạn **không cần SSH** vào VPS. Watchtowe
 | Registry | `5000` | `5000` | Docker Registry API |
 | Registry UI | `5001` | `5001` | Registry Web UI |
 | Nginx UI | `80/443` | **Internet** | SSL + Reverse Proxy |
-| Dozzle | `8080` | `127.0.0.1` only | Log Viewer |
+| Dozzle | `8888` | `127.0.0.1` only | Log Viewer |
 | Cockpit | `9090` | `9090` | Server Admin |
 
 ::: warning Chỉ port 80/443 mở ra Internet
@@ -197,7 +197,7 @@ Bạn hoàn toàn có thể chạy hệ thống chỉ với IP. Xem hướng d�
 | `nhaateliertattoo.com` | Website (Next.js) | `8000` | Trang chính |
 | `admin.nhaateliertattoo.com` | Strapi Admin | `1337` | Quản trị nội dung |
 | `nginx-ui.nhaateliertattoo.com` | Nginx UI | `9000` | Quản lý Nginx + SSL |
-| `dozzle.nhaateliertattoo.com` | Dozzle Logs | `8080` | Xem log (Basic Auth) |
+| `dozzle.nhaateliertattoo.com` | Dozzle Logs | `8080 (Docker) / 8888 (Host)` | Xem log (Basic Auth) |
 | `registry-ui.nhaateliertattoo.com` | Registry UI | `5001` | Quản lý Docker images |
 | `cockpit.nhaateliertattoo.com` | Cockpit | `9090` | Quản lý server |
 

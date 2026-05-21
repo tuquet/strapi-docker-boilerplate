@@ -35,7 +35,7 @@ flowchart TB
   subgraph Services["Docker Services"]
     Registry["📦 Docker Registry\n(:5000)"]
     RegUI["🖼️ Registry UI\n(:5001)"]
-    Dozzle["📜 Dozzle Logs\n(:8080 localhost)"]
+    Dozzle["📜 Dozzle Logs\n(:8888 localhost)"]
     WT["🔄 Watchtower\n(no port)"]
   end
 
@@ -182,7 +182,10 @@ server {
     auth_basic_user_file /etc/nginx/registry.password;
 
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        # Nếu Nginx chạy chung network Docker (Nginx UI - Khuyến nghị):
+        proxy_pass http://dozzle:8080;
+        # Nếu Nginx chạy trực tiếp trên Host (ngoài Docker):
+        # proxy_pass http://127.0.0.1:8888;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
 
@@ -327,7 +330,7 @@ Chỉ các port sau được mở ra Internet:
 | `80` | HTTP | Nginx UI |
 | `443` | HTTPS | Nginx UI (SSL) |
 
-Tất cả port khác (`5000`, `5001`, `8080`, `9090`) chỉ truy cập qua Docker network nội bộ hoặc qua reverse proxy của Nginx UI.
+Tất cả port khác (`5000`, `5001`, `8888`, `9090`) chỉ truy cập qua Docker network nội bộ hoặc qua reverse proxy của Nginx UI.
 
 ---
 
