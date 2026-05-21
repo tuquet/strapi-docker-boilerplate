@@ -1,8 +1,10 @@
 import { Link } from 'next-view-transitions';
 import React from 'react';
 
+import { Heading } from '@/components/elements/heading';
 import { StrapiImage } from '@/components/ui/strapi-image';
-import { formatNumber } from '@/lib/utils';
+import { themeConfig } from '@/lib/theme.config';
+import { cn, formatNumber } from '@/lib/utils';
 import { Product } from '@/types/types';
 
 export const Featured = ({
@@ -20,9 +22,9 @@ export const Featured = ({
 
   return (
     <div className="py-20">
-      <h2 className="text-2xl md:text-4xl font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white mb-2">
+      <Heading as="h2" size="sm" className="text-left mb-2">
         {heading || 'Featured'}
-      </h2>
+      </Heading>
       <p className="text-neutral-500 text-lg mt-4 mb-10">
         {sub_heading || 'Pick from our most popular collection'}
       </p>
@@ -61,7 +63,10 @@ const FeaturedItem = ({
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black transition-all duration-200 z-30" />
       <div className="absolute text-sm top-4 right-2 md:top-10 md:right-10 z-40 bg-white rounded-full pr-1 pl-4 py-1 text-black font-medium flex gap-4 items-center">
         <span>{product.name}</span>
-        <span className="bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white px-2 py-1 rounded-full">
+        <span className={cn(
+          "text-white px-2 py-1 rounded-full text-xs font-medium",
+          themeConfig.products.priceBadgeBgClass || "bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"
+        )}>
           {locale === 'vi' ? '₫' : '$'}
           {formatNumber(product.price, locale)}
         </span>

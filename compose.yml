@@ -46,6 +46,8 @@ services:
       - ./strapi/src:/opt/app/src
       - ./strapi/package.json:/opt/app/package.json
       - ./strapi/yarn.lock:/opt/app/yarn.lock
+      # Persist uploaded media files across rebuilds
+      - strapi-uploads:/opt/app/public/uploads
     ports:
       - '1337:1337'
     healthcheck:
@@ -96,3 +98,4 @@ services:
 
 volumes:
   strapi-data:
+  strapi-uploads:

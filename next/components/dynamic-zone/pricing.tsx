@@ -8,7 +8,8 @@ import { Button } from '../elements/button';
 import { Heading } from '../elements/heading';
 import { Subheading } from '../elements/subheading';
 import { FeatureIconContainer } from './features/feature-icon-container';
-import { cn } from '@/lib/utils';
+import { themeConfig } from '@/lib/theme.config';
+import { cn, formatNumber } from '@/lib/utils';
 
 type Perks = {
   [key: string]: string;
@@ -40,10 +41,17 @@ const translations = {
   en: {
     currency: '$',
     featured: 'Featured',
+    suffix: 'launch',
+  },
+  vi: {
+    currency: ' ₫',
+    featured: 'Nổi bật',
+    suffix: 'khai trương',
   },
   fr: {
     currency: '€',
     featured: 'En vedette',
+    suffix: 'lancement',
   },
 };
 
@@ -134,13 +142,13 @@ const Card = ({
                 'font-medium text-xs px-3 py-1 rounded-full relative bg-neutral-900'
               )}
             >
-              <div className="absolute inset-x-0 bottom-0 w-3/4 mx-auto h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+              <div className={cn("absolute inset-x-0 bottom-0 w-3/4 mx-auto h-px", themeConfig.pricing.badgeGradientClass || "bg-gradient-to-r from-transparent via-indigo-500 to-transparent")}></div>
               {t.featured}
             </div>
           )}
         </div>
         <div className="mt-8 flex items-baseline">
-          {displayPlan.price && (
+          {displayPlan.price !== undefined && displayPlan.price > 0 && (
             <span
               className={cn(
                 'text-lg font-bold text-neutral-500',
@@ -156,16 +164,18 @@ const Card = ({
               displayPlan.featured && 'text-black'
             )}
           >
-            {displayPlan.price || displayPlan?.CTA?.text}
+            {displayPlan.price !== undefined && displayPlan.price > 0
+              ? formatNumber(displayPlan.price, locale === 'vi' ? 'vi-VN' : 'en-US')
+              : displayPlan?.CTA?.text}
           </span>
-          {displayPlan.price && (
+          {displayPlan.price !== undefined && displayPlan.price > 0 && (
             <span
               className={cn(
                 'text-lg font-normal text-neutral-500 ml-2',
                 displayPlan.featured && 'text-neutral-700'
               )}
             >
-              launch
+              {t.suffix}
             </span>
           )}
         </div>
@@ -217,7 +227,7 @@ const Step = ({
       <div
         className={cn(
           'h-4 w-4 rounded-full bg-neutral-700 flex items-center justify-center flex-shrink-0 mt-0.5',
-          additional ? 'bg-indigo-600' : 'bg-neutral-700'
+          additional ? (themeConfig.pricing.checkmarkBgClass || 'bg-indigo-600') : 'bg-neutral-700'
         )}
       >
         <IconCheck className="h-3 w-3 [stroke-width:4px] text-neutral-300" />

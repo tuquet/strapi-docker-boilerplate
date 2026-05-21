@@ -12,8 +12,9 @@ export const TestimonialsMarquee = ({
 }: {
   testimonials: any;
 }) => {
-  const levelOne = testimonials.slice(0, 8);
-  const levelTwo = testimonials.slice(8, 16);
+  const mid = Math.ceil(testimonials.length / 2);
+  const levelOne = testimonials.slice(0, mid);
+  const levelTwo = testimonials.slice(mid);
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex h-full relative">
@@ -32,7 +33,7 @@ export const TestimonialsMarquee = ({
                   alt={`${testimonial.user.firstname} ${testimonial.user.lastname}`}
                   width={40}
                   height={40}
-                  className="rounded-full"
+                  className="rounded-full object-cover w-10 h-10"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">
@@ -63,7 +64,7 @@ export const TestimonialsMarquee = ({
                   alt={`${testimonial.user.firstname} ${testimonial.user.lastname}`}
                   width={40}
                   height={40}
-                  className="rounded-full"
+                  className="rounded-full object-cover w-10 h-10"
                 />
                 <div className="flex flex-col">
                   <QuoteDescription className="text-neutral-300">

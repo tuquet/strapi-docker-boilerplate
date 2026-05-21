@@ -1,0 +1,22 @@
+{
+  "slug": "pricing",
+  "locale": "vi",
+  "seo": {
+    "metaTitle": "Bảng giá — Nhà Atelier Tattoo Studio",
+    "metaDescription": "Bảng giá dịch vụ xăm hình tại Nhà Atelier. Minh bạch, rõ ràng. Giá đã bao gồm thiết kế và hướng dẫn chăm sóc sau xăm."
+  },
+  "dynamic_zone": [
+    {
+      "__component": "dynamic-zone.pricing",
+      "heading": "Bảng giá dịch vụ",
+      "sub_heading": "Minh bạch, rõ ràng. Giá đã bao gồm thiết kế và hướng dẫn chăm sóc sau xăm.",
+      "_plans_ref": "INJECT_PLAN_IDS"
+    },
+    {
+      "__component": "dynamic-zone.faq",
+      "heading": "Câu hỏi thường gặp",
+      "sub_heading": "Bạn có thắc mắc? Nhắn tin cho chúng tôi qua Facebook hoặc Instagram.",
+      "_faqs_ref": "INJECT_FAQ_IDS"
+    }
+  ]
+}

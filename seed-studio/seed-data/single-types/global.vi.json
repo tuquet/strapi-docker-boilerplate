@@ -1,0 +1,39 @@
+{
+  "admin_title": "Nhà Atelier CMS",
+  "add_to_cart": "Đặt lịch",
+  "your_cart": "Lịch hẹn của bạn",
+  "buy_now": "Đặt lịch ngay",
+  "seo": {
+    "metaTitle": "Nhà Atelier — Xưởng xăm hình nghệ thuật tại Hà Nội",
+    "metaDescription": "Nhà Atelier Tattoo Studio — Xưởng xăm hình nghệ thuật tại Hà Nội. Chuyên Blackwork, Fineline, Abstract, Custom Design. Walk-ins welcome. 📍146 Phan Kế Bính & 1B Chân Cầm."
+  },
+  "navbar": {
+    "left_navbar_items": [
+      { "text": "Gallery", "URL": "/products", "target": "_self" },
+      { "text": "Blog", "URL": "/blog", "target": "_self" },
+      { "text": "Bảng giá", "URL": "/pricing", "target": "_self" }
+    ],
+    "right_navbar_items": [
+      { "text": "Đặt lịch", "URL": "/dat-lich", "target": "_self" }
+    ]
+  },
+  "footer": {
+    "description": "Nhà Atelier — nơi mỗi hình xăm là một tác phẩm nghệ thuật. Xưởng xăm hình với không gian ấm cúng tại hai cơ sở: Ba Đình & Phố Cổ, Hà Nội.",
+    "copyright": "© 2025 Nhà Atelier Tattoo Studio. All rights reserved.",
+    "designed_developed_by": "Nhà Atelier",
+    "built_with": "Strapi & Next.js",
+    "internal_links": [
+      { "text": "Gallery", "URL": "/products", "target": "_self" },
+      { "text": "Blog", "URL": "/blog", "target": "_self" },
+      { "text": "Bảng giá", "URL": "/pricing", "target": "_self" }
+    ],
+    "policy_links": [
+      { "text": "Chính sách bảo mật", "URL": "/privacy", "target": "_self" },
+      { "text": "Điều khoản dịch vụ", "URL": "/terms", "target": "_self" }
+    ],
+    "social_media_links": [
+      { "text": "Facebook", "URL": "https://www.facebook.com/nhaateliertattoostudio", "target": "_blank" },
+      { "text": "Instagram", "URL": "https://www.instagram.com/nhaatelier", "target": "_blank" }
+    ]
+  }
+}

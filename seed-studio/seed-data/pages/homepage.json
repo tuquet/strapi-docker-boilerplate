@@ -1,105 +1,97 @@
 {
-  "_comment": "Homepage — dynamic_zone relations (testimonials, faqs, plans) sẽ được inject tự động bởi seeder sau khi seed xong các collection type.",
+  "_comment": "Homepage EN — dynamic_zone relations will be injected by seeder.",
   "slug": "homepage",
   "seo": {
-    "metaTitle": "LaunchPad — Modern SaaS for Growing Teams",
-    "metaDescription": "LaunchPad helps businesses scale faster with analytics, marketing automation, and design tools. Start your free trial today."
+    "metaTitle": "Nhà Atelier — Extraordinary Tattoo Studio in Hanoi",
+    "metaDescription": "Nhà Atelier Tattoo Studio — An extraordinary tattoo studio in Hanoi. Specializing in Blackwork, Fineline, Abstract, Custom Design."
   },
   "dynamic_zone": [
     {
       "__component": "dynamic-zone.hero",
-      "heading": "Build faster. Scale smarter.",
-      "sub_heading": "The all-in-one platform that empowers your team with analytics, automation, and design tools to drive real growth.",
+      "heading": "Extraordinary tattoo studio",
+      "sub_heading": "Where every tattoo tells a story. Custom designs, meticulous craftsmanship, absolute safety. Walk-ins welcome.",
       "CTAs": [
-        { "text": "Start Free Trial", "URL": "/sign-up", "variant": "primary" },
-        { "text": "View Products", "URL": "/products", "variant": "outline" }
+        { "text": "Book Now", "URL": "/dat-lich", "variant": "primary" },
+        { "text": "View Gallery", "URL": "/products", "variant": "outline" }
       ]
     },
     {
       "__component": "dynamic-zone.features",
-      "heading": "Everything you need to grow",
-      "sub_heading": "Powerful features designed for modern teams.",
+      "heading": "Why choose Nhà Atelier?",
+      "sub_heading": "An art studio for tattoos — where creativity and safety go hand in hand.",
       "globe_card": {
-        "title": "Global Analytics",
-        "description": "Track your metrics across regions and time zones with real-time dashboards.",
+        "title": "Diverse Styles",
+        "description": "From delicate Fineline to bold Blackwork, from artistic Abstract to classic Oriental — we bring every idea to life.",
         "span": "two"
       },
       "ray_card": {
-        "title": "Lightning Fast",
-        "description": "Sub-100ms response times with edge-optimized infrastructure.",
-        "before_ray_items": {
-          "item_1": "99.99%",
-          "item_2": "Uptime",
-          "item_3": "SLA"
-        },
-        "after_ray_items": {
-          "item_1": "<100ms",
-          "item_2": "Response",
-          "item_3": "Time"
-        },
+        "title": "Absolute Safety",
+        "description": "100% sterilized equipment, premium imported ink, strict hygiene protocols following medical standards.",
+        "before_ray_items": { "item_1": "100%", "item_2": "Hygiene", "item_3": "Certified" },
+        "after_ray_items": { "item_1": "100%", "item_2": "Safety", "item_3": "Guaranteed" },
         "span": "one"
       },
       "graph_card": {
-        "title": "Growth Metrics",
-        "description": "Visualize your growth with beautiful, interactive charts and reports.",
+        "title": "Experience & Trust",
+        "description": "Hundreds of completed artworks and a thriving community of tattoo art lovers.",
         "top_items": [
-          { "number": "10M+", "text": "Events Processed" },
-          { "number": "5K+", "text": "Active Teams" },
-          { "number": "99.9%", "text": "Accuracy" }
+          { "number": "350+", "text": "Artworks" },
+          { "number": "11K+", "text": "Followers" },
+          { "number": "2", "text": "Locations" }
         ],
-        "highlighted_text": "+127% MoM Growth",
+        "highlighted_text": "Quality is our #1 priority",
         "span": "one"
       },
       "social_media_card": {
-        "Title": "Integrations",
-        "Description": "Connect with the tools your team already loves.",
+        "Title": "Follow Nhà Atelier",
+        "Description": "See our latest work on Facebook and Instagram @nhaatelier.",
         "span": "two"
       }
     },
     {
       "__component": "dynamic-zone.how-it-works",
-      "heading": "Get started in 3 easy steps",
-      "sub_heading": "From sign-up to insights in under 5 minutes.",
+      "heading": "3 Simple Steps",
+      "sub_heading": "From idea to artwork — we walk with you every step of the way.",
       "steps": [
         {
-          "title": "Create your account",
-          "description": "Sign up for free in seconds. No credit card required."
+          "title": "Consult & Design",
+          "description": "Share your ideas — our artist will sketch a unique design, with unlimited revisions until you're completely satisfied."
         },
         {
-          "title": "Connect your data",
-          "description": "Integrate your existing tools with our one-click connectors or REST API."
+          "title": "Approve & Book",
+          "description": "Finalize your design and pick a date that works for you. Walk-ins are always welcome too!"
         },
         {
-          "title": "Get actionable insights",
-          "description": "Start seeing real-time analytics and automated reports immediately."
+          "title": "Create & Care",
+          "description": "Get tattooed in our cozy, home-like studio, with detailed aftercare guidance and touch-up support."
         }
       ]
     },
     {
       "__component": "dynamic-zone.pricing",
-      "heading": "Simple, transparent pricing",
-      "sub_heading": "No hidden fees. No surprises. Pick the plan that fits your team.",
+      "heading": "Service Pricing",
+      "sub_heading": "Transparent and straightforward. Price includes design and aftercare guidance.",
       "_plans_ref": "INJECT_PLAN_IDS"
     },
     {
       "__component": "dynamic-zone.testimonials",
-      "heading": "Loved by teams worldwide",
-      "sub_heading": "See what our customers have to say about LaunchPad.",
+      "heading": "What our clients say",
+      "sub_heading": "Real experiences from our tattoo art community.",
       "_testimonials_ref": "INJECT_TESTIMONIAL_IDS"
     },
     {
       "__component": "dynamic-zone.faq",
-      "heading": "Frequently asked questions",
-      "sub_heading": "Can't find the answer you're looking for? Reach out to our support team.",
+      "heading": "Frequently Asked Questions",
+      "sub_heading": "Have questions? Message us on Facebook or Instagram.",
       "_faqs_ref": "INJECT_FAQ_IDS"
     },
     {
       "__component": "dynamic-zone.cta",
-      "heading": "Ready to get started?",
-      "sub_heading": "Join thousands of teams that are already using LaunchPad to grow their business.",
+      "heading": "Ready to own your next piece of art?",
+      "sub_heading": "Contact Nhà Atelier for a free consultation and book your session.",
       "CTAs": [
-        { "text": "Start Free Trial", "URL": "/sign-up", "variant": "primary" },
-        { "text": "Contact Sales", "URL": "/contact", "variant": "outline" }
+        { "text": "Book Now", "URL": "/dat-lich", "variant": "primary" },
+        { "text": "DM for Consultation", "URL": "https://www.instagram.com/nhaatelier", "variant": "outline" }
       ]
     }
   ]

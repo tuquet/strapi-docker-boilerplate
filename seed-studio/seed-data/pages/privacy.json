@@ -1,14 +1,14 @@
 {
   "slug": "privacy",
   "seo": {
-    "metaTitle": "Privacy Policy — LaunchPad CMS",
-    "metaDescription": "Our privacy policy and data handling practices. Learn how we protect your personal information."
+    "metaTitle": "Privacy Policy — Nhà Atelier Tattoo Studio",
+    "metaDescription": "Privacy policy and personal data handling practices at Nhà Atelier Tattoo Studio."
   },
   "dynamic_zone": [
     {
       "__component": "dynamic-zone.hero",
       "heading": "Privacy Policy",
-      "sub_heading": "Last updated: May 2026. We take your privacy seriously."
+      "sub_heading": "Last updated: May 2026. We are committed to protecting your personal information."
     }
   ]
 }

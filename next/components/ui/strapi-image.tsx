@@ -13,7 +13,20 @@ interface StrapiImageProps
 export function getStrapiMedia(url: string | null) {
   if (url == null) return null;
   if (url.startsWith('data:')) return url;
-  if (url.startsWith('http') || url.startsWith('//')) return url;
+
+  // For absolute Strapi URLs (e.g. http://localhost:1337/uploads/...),
+  // extract just the /uploads/... path. The Next.js rewrite rule
+  // proxies /uploads/* → strapi:1337 internally, avoiding hostname issues.
+  if (url.startsWith('http') || url.startsWith('//')) {
+    const uploadsIndex = url.indexOf('/uploads/');
+    if (uploadsIndex !== -1) {
+      return url.substring(uploadsIndex);
+    }
+    return url;
+  }
+
+  // Relative paths starting with /uploads/ — pass through as-is
+  if (url.startsWith('/uploads/')) return url;
 
   return API_URL + url;
 }

@@ -11,6 +11,7 @@ import {
 } from 'framer-motion';
 import React, { MouseEvent as ReactMouseEvent, useRef } from 'react';
 
+import { themeConfig } from '@/lib/theme.config';
 import Beam from '../../beam';
 import { CanvasRevealEffect } from '../../ui/canvas-reveal-effect';
 
@@ -50,12 +51,35 @@ export const Card = ({
   });
 
   useMotionValueEvent(width, 'change', (latest) => {});
+
+  const textColor = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.8, 0.95],
+    ['#171717', '#ffffff', '#ffffff', '#171717']
+  );
+
+  const textShadow = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.8, 0.95],
+    [
+      themeConfig.neonGlow.cardGlowText.inactive,
+      themeConfig.neonGlow.cardGlowText.active,
+      themeConfig.neonGlow.cardGlowText.active,
+      themeConfig.neonGlow.cardGlowText.inactive,
+    ]
+  );
+
   return (
     <div
       ref={ref}
       className="grid grid-cols-1 md:grid-cols-4 max-w-4xl mx-auto py-20"
     >
-      <p className="text-9xl font-bold text-neutral-900 mt-8">{'0' + index}</p>
+      <motion.p
+        className="text-9xl font-bold mt-8 select-none"
+        style={{ color: textColor, textShadow }}
+      >
+        {'0' + index}
+      </motion.p>
       <motion.div
         className="h-px w-full hidden md:block bg-gradient-to-r from-neutral-800 to-neutral-600 rounded-full mt-16 relative overflow-hidden"
         style={{ width }}
@@ -81,10 +105,7 @@ export const Card = ({
           <CanvasRevealEffect
             animationSpeed={5}
             containerClassName="bg-transparent absolute inset-0 pointer-events-none"
-            colors={[
-              [59, 130, 246],
-              [139, 92, 246],
-            ]}
+            colors={themeConfig.effects.canvasRevealColors}
             dotSize={2}
           />
         </motion.div>

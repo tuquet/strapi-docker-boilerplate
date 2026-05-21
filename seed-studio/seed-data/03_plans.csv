@@ -1,6 +1,9 @@
 name,price,sub_text,featured,cta_label,cta_url,cta_variant,product_name,perks,additional_perks,locale
-"Starter",29,"mỗi tháng",false,"Dùng thử miễn phí","/dang-ky","outline","Analytics Pro","Tối đa 3 dashboard|100.000 sự kiện/tháng|Báo cáo cơ bản|Email hỗ trợ","",en
-"Professional",79,"mỗi tháng",true,"Bắt đầu ngay","/dang-ky-pro","primary","Analytics Pro","Không giới hạn dashboard|2 triệu sự kiện/tháng|Báo cáo nâng cao|Hỗ trợ ưu tiên|API access","Xuất dữ liệu tùy chỉnh",en
-"Enterprise",0,"Liên hệ báo giá",false,"Liên hệ Sales","/lien-he","muted","Analytics Pro","Không giới hạn mọi thứ|SLA 99.99% uptime|Dedicated account manager|On-premise deployment","SSO/SAML|Custom contract",en
-"Basic",19,"mỗi tháng",false,"Dùng thử 14 ngày","/dang-ky","outline","Marketing Hub","5.000 email/tháng|3 automation workflow|1 landing page","",en
-"Growth",59,"mỗi tháng",true,"Dùng thử 14 ngày","/dang-ky-growth","primary","Marketing Hub","50.000 email/tháng|Unlimited workflows|10 landing pages|A/B Testing","CRM sync",en
+"Small Tattoo",500000,"under 5cm",false,"Book Now","/dat-lich","outline","Custom Tattoo","Size under 5cm|Duration 1-2 hours|Design included|Aftercare guide","",en
+"Medium Tattoo",1500000,"5-15cm",true,"Book Now","/dat-lich","primary","Custom Tattoo","Size 5-15cm|Duration 2-4 hours|Custom design|Free touch-up|Placement consultation","Professional photo of artwork",en
+"Large / Full Piece",0,"Contact for quote",false,"DM for Quote","/lien-he","muted","Custom Tattoo","Sleeve / Back piece / Bodysuit|Multiple sessions|100% custom design|Dedicated artist|Package discount","Long-term planning|Flexible session deposits",en
+"Cover-up & Touch-up",0,"Contact for quote",true,"DM for Quote","/lien-he","primary","Cover-up & Fix","Free old tattoo assessment|Optimal cover plan|Advanced cover techniques|Minor corrections & touch-up|Completely new design","Free touch-up if tattooed at Nhà Atelier",en
+"Small Tattoo",500000,"dưới 5cm",false,"Đặt lịch ngay","/dat-lich","outline","Custom Tattoo","Kích thước dưới 5cm|Thời gian 1-2 giờ|Bao gồm thiết kế|Hướng dẫn chăm sóc","",vi
+"Medium Tattoo",1500000,"5-15cm",true,"Đặt lịch ngay","/dat-lich","primary","Custom Tattoo","Kích thước 5-15cm|Thời gian 2-4 giờ|Thiết kế tùy chỉnh|Touch-up miễn phí|Tư vấn placement","Chụp ảnh tác phẩm chuyên nghiệp",vi
+"Large / Full Piece",0,"Liên hệ báo giá",false,"Nhắn tin tư vấn","/lien-he","muted","Custom Tattoo","Sleeve / Back piece / Bodysuit|Nhiều session|Thiết kế riêng 100%|Dedicated artist|Ưu đãi trọn gói","Lên kế hoạch dài hạn|Session deposit linh hoạt",vi
+"Cover-up & Touch-up",0,"Liên hệ báo giá",true,"Nhắn tin tư vấn","/lien-he","primary","Cover-up & Fix","Đánh giá hình xăm cũ miễn phí|Tư vấn phương án cover tối ưu|Kỹ thuật cover chuyên sâu|Chỉnh sửa nhỏ & touch-up|Thiết kế mới hoàn toàn","Miễn phí touch-up nếu xăm tại Nhà Atelier",vi

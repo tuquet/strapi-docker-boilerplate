@@ -65,10 +65,10 @@ const SEED_DIR = path.join(__dirname, 'seed-data');
 const DEFAULT_LOCALE = 'en';
 
 // Thư mục chứa ảnh static local để seed.
-// Mặc định: strapi/public/uploads/ — override bằng SEED_STATIC_DIR env var.
+// Mặc định: seed-content/ — override bằng SEED_STATIC_DIR env var.
 const STATIC_DIR =
   process.env.SEED_STATIC_DIR ||
-  path.join(__dirname, '..', 'strapi', 'public', 'uploads');
+  path.join(__dirname, '..', 'seed-content');
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
 
@@ -115,7 +115,9 @@ const post = async (endpoint, data) => {
     log.dry(endpoint, JSON.stringify(data).slice(0, 100));
     return { id: 0, documentId: 'dry-run' };
   }
-  const url = `${STRAPI_URL}/api/${endpoint}`;
+  // Strapi v5: locale phải gửi qua query param cho non-default locales
+  const locale = data.locale && data.locale !== DEFAULT_LOCALE ? data.locale : '';
+  const url = `${STRAPI_URL}/api/${endpoint}${locale ? `?locale=${locale}` : ''}`;
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -145,12 +147,14 @@ const post = async (endpoint, data) => {
 };
 
 /** PUT request tới Strapi (cho Single Types) */
-const put = async (endpoint, data) => {
+const put = async (endpoint, data, locale = '') => {
   if (FLAG_DRY_RUN) {
     log.dry(`PUT ${endpoint}`, JSON.stringify(data).slice(0, 100));
     return { id: 0 };
   }
-  const url = `${STRAPI_URL}/api/${endpoint}`;
+  // Strapi v5: locale phải gửi qua query param cho non-default locales
+  const localeParam = locale && locale !== DEFAULT_LOCALE ? locale : '';
+  const url = `${STRAPI_URL}/api/${endpoint}${localeParam ? `?locale=${localeParam}` : ''}`;
   try {
     const res = await fetch(url, {
       method: 'PUT',
@@ -179,6 +183,45 @@ const put = async (endpoint, data) => {
   }
 };
 
+/**
+ * PUT request cho Collection Types — dùng để tạo/update localization variant
+ * URL: PUT /api/:endpoint/:documentId?locale=vi
+ */
+const putDoc = async (endpoint, documentId, data, locale = '') => {
+  if (FLAG_DRY_RUN) {
+    log.dry(`PUT ${endpoint}/${documentId}`, JSON.stringify(data).slice(0, 100));
+    return { id: 0, documentId };
+  }
+  const localeParam = locale && locale !== DEFAULT_LOCALE ? locale : '';
+  const url = `${STRAPI_URL}/api/${endpoint}/${documentId}${localeParam ? `?locale=${localeParam}` : ''}`;
+  try {
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_TOKEN}`,
+      },
+      body: JSON.stringify({ data }),
+    });
+    if (!res.ok) {
+      const errBody = await res.text();
+      let errMsg = errBody;
+      try {
+        errMsg = JSON.parse(errBody)?.error?.message || errBody;
+      } catch {
+        /* */
+      }
+      log.error(`${endpoint}/${documentId}`, `HTTP ${res.status} — ${errMsg}`);
+      return null;
+    }
+    const json = await res.json();
+    return json.data ?? null;
+  } catch (err) {
+    log.error(`${endpoint}/${documentId}`, `Network error — ${err.message}`);
+    return null;
+  }
+};
+
 /** GET request — lấy danh sách entities */
 const getAll = async (endpoint, params = '') => {
   const url = `${STRAPI_URL}/api/${endpoint}?pagination[pageSize]=100${params ? '&' + params : ''}`;
@@ -194,10 +237,11 @@ const getAll = async (endpoint, params = '') => {
   }
 };
 
-/** DELETE request */
-const del = async (endpoint, documentId) => {
+/** DELETE request — hỗ trợ locale param cho Strapi v5 */
+const del = async (endpoint, documentId, locale) => {
   if (FLAG_DRY_RUN) return;
-  const url = `${STRAPI_URL}/api/${endpoint}/${documentId}`;
+  const localeParam = locale ? `?locale=${locale}` : '';
+  const url = `${STRAPI_URL}/api/${endpoint}/${documentId}${localeParam}`;
   try {
     await fetch(url, {
       method: 'DELETE',
@@ -208,14 +252,21 @@ const del = async (endpoint, documentId) => {
   }
 };
 
-/** Xóa toàn bộ data của một endpoint */
+/** Xóa toàn bộ data của một endpoint (bao gồm tất cả locales) */
 const cleanEndpoint = async (endpoint) => {
-  const items = await getAll(endpoint);
-  if (items.length === 0) return;
-  for (const item of items) {
-    await del(endpoint, item.documentId);
+  // Strapi v5: query từng locale rồi delete với locale param tường minh
+  let count = 0;
+
+  // Delete VI locale first (non-default), then EN (default)
+  for (const locale of ['vi', 'en']) {
+    const items = await getAll(endpoint, `locale=${locale}`);
+    for (const item of items) {
+      await del(endpoint, item.documentId, locale);
+      count++;
+    }
   }
-  log.clean(endpoint, items.length);
+
+  if (count > 0) log.clean(endpoint, count);
 };
 
 /** Map file extension → MIME type chính xác */
@@ -282,7 +333,13 @@ const resolveImage = async (src, name) => {
   } else {
     // Local: nếu không phải absolute path → thử resolve từ STATIC_DIR
     if (!path.isAbsolute(src) && !fs.existsSync(src)) {
-      resolvedSrc = path.join(STATIC_DIR, path.basename(src));
+      // Thử full relative path trước, rồi fallback sang basename
+      const fullRelPath = path.join(STATIC_DIR, src);
+      if (fs.existsSync(fullRelPath)) {
+        resolvedSrc = fullRelPath;
+      } else {
+        resolvedSrc = path.join(STATIC_DIR, path.basename(src));
+      }
     }
     ext = path.extname(resolvedSrc) || '.jpg';
   }
@@ -381,6 +438,15 @@ const findExisting = async (endpoint, field, value) => {
   return items.length > 0 ? items[0] : null;
 };
 
+/** Tìm entity đã tồn tại theo field + locale (cho bilingual CSV) */
+const findExistingWithLocale = async (endpoint, field, value, locale) => {
+  const items = await getAll(
+    endpoint,
+    `filters[${field}][$eq]=${encodeURIComponent(value)}&locale=${locale || DEFAULT_LOCALE}`
+  );
+  return items.length > 0 ? items[0] : null;
+};
+
 // ─── SEEDERS ──────────────────────────────────────────────────────────────────
 
 /**
@@ -430,6 +496,10 @@ const seedLogos = async () => {
 const seedCategories = async () => {
   log.info('Seeding Categories...');
   const rows = readCsv('01_categories.csv');
+  /**
+   * Map category name → documentId (Strapi v5 dùng documentId cho relations,
+   * đặc biệt quan trọng khi link cross-locale entities)
+   */
   const map = {};
   for (const row of rows) {
     if (!row.name) {
@@ -438,17 +508,30 @@ const seedCategories = async () => {
     }
     const existing = await findExisting('categories', 'name', row.name);
     if (existing) {
-      map[row.name] = existing.id;
-      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
+      map[row.name] = existing.documentId;
+      log.skip(`Đã tồn tại: ${row.name} (docId:${existing.documentId})`);
+
+      // Đảm bảo locale VI cũng tồn tại (dùng PUT để tạo localization variant)
+      const viExisting = await findExistingWithLocale('categories', 'name', row.name, 'vi');
+      if (!viExisting) {
+        await putDoc('categories', existing.documentId, { name: row.name }, 'vi');
+        log.ok('', `${row.name} [vi] localized`);
+      }
       continue;
     }
+
+    // Tạo EN (default locale)
     const created = await post('categories', {
       name: row.name,
-      locale: row.locale || DEFAULT_LOCALE,
+      locale: DEFAULT_LOCALE,
     });
     if (created) {
-      map[row.name] = created.id;
+      map[row.name] = created.documentId;
       log.ok(created.id, row.name);
+
+      // Tạo VI locale variant bằng PUT (cùng documentId)
+      await putDoc('categories', created.documentId, { name: row.name }, 'vi');
+      log.ok('', `${row.name} [vi] localized`);
     }
   }
   return map;
@@ -457,30 +540,32 @@ const seedCategories = async () => {
 const seedProducts = async (categoryMap) => {
   log.info('Seeding Products...');
   const rows = readCsv('02_products.csv');
+
+  /**
+   * Map product name → documentId (shared between EN and VI locale variants)
+   * Strategy: Seed EN first (POST), then VI as localization variant (PUT)
+   */
   const map = {};
-  for (const row of rows) {
-    if (!row.name) {
-      log.skip('Bỏ qua dòng không có name');
-      continue;
-    }
-    const existing = await findExisting('products', 'name', row.name);
+
+  // Tách EN và VI rows
+  const enRows = rows.filter((r) => (r.locale || DEFAULT_LOCALE) === DEFAULT_LOCALE);
+  const viRows = rows.filter((r) => r.locale === 'vi');
+
+  // Phase 1: Seed EN products
+  for (const row of enRows) {
+    if (!row.name) continue;
+
+    const existing = await findExistingWithLocale('products', 'name', row.name, 'en');
     if (existing) {
-      map[row.name] = existing.id;
-      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
+      map[row.name] = existing.documentId;
+      log.skip(`Đã tồn tại: ${row.name} [en] (docId:${existing.documentId})`);
       continue;
     }
 
     const categoryId = categoryMap[row.category_name];
-    if (row.category_name && !categoryId) {
-      log.skip(`Category "${row.category_name}" không tìm thấy`);
-    }
-
     let imageId = null;
     if (row.image_url) {
-      imageId = await resolveImage(
-        row.image_url,
-        `product-${row.slug || row.name}`
-      );
+      imageId = await resolveImage(row.image_url, `product-${row.slug || row.name}`);
     }
 
     const payload = {
@@ -489,22 +574,56 @@ const seedProducts = async (categoryMap) => {
       description: row.description || '',
       price: parseInt(row.price, 10) || 0,
       featured: row.featured === 'true',
-      locale: row.locale || DEFAULT_LOCALE,
       perks: parsePerks(row.perks),
       categories: categoryId ? [categoryId] : [],
       publishedAt: new Date().toISOString(),
     };
-
-    if (imageId) {
-      payload.images = [imageId];
-    }
+    if (imageId) payload.images = [imageId];
 
     const created = await post('products', payload);
     if (created) {
-      map[row.name] = created.id;
-      log.ok(created.id, row.name);
+      map[row.name] = created.documentId;
+      log.ok(created.id, `${row.name} [en]`);
     }
   }
+
+  // Phase 2: Seed VI products as localization variants
+  for (const row of viRows) {
+    if (!row.name) continue;
+    const docId = map[row.name];
+    if (!docId) {
+      log.skip(`Không tìm thấy EN product cho: ${row.name} [vi]`);
+      continue;
+    }
+
+    const viExisting = await findExistingWithLocale('products', 'name', row.name, 'vi');
+    if (viExisting) {
+      log.skip(`Đã tồn tại: ${row.name} [vi]`);
+      continue;
+    }
+
+    const categoryId = categoryMap[row.category_name];
+    let imageId = null;
+    if (row.image_url) {
+      imageId = await resolveImage(row.image_url, `product-${row.slug || row.name}`);
+    }
+
+    const payload = {
+      name: row.name,
+      slug: row.slug || row.name.toLowerCase().replace(/\s+/g, '-'),
+      description: row.description || '',
+      price: parseInt(row.price, 10) || 0,
+      featured: row.featured === 'true',
+      perks: parsePerks(row.perks),
+      categories: categoryId ? [categoryId] : [],
+      publishedAt: new Date().toISOString(),
+    };
+    if (imageId) payload.images = [imageId];
+
+    const result = await putDoc('products', docId, payload, 'vi');
+    if (result) log.ok(result.id, `${row.name} [vi] localized`);
+  }
+
   return map;
 };
 
@@ -512,43 +631,59 @@ const seedPlans = async (productMap) => {
   log.info('Seeding Plans...');
   const rows = readCsv('03_plans.csv');
   const map = {};
-  for (const row of rows) {
-    if (!row.name) {
-      log.skip('Bỏ qua dòng không có name');
-      continue;
-    }
-    const existing = await findExisting('plans', 'name', row.name);
-    if (existing) {
-      map[row.name] = existing.id;
-      log.skip(`Đã tồn tại: ${row.name} (ID:${existing.id})`);
-      continue;
-    }
 
-    const productId = productMap[row.product_name];
-    if (row.product_name && !productId) {
-      log.skip(`Product "${row.product_name}" không tìm thấy`);
+  const enRows = rows.filter((r) => (r.locale || DEFAULT_LOCALE) === DEFAULT_LOCALE);
+  const viRows = rows.filter((r) => r.locale === 'vi');
+
+  const buildPlanPayload = (row) => ({
+    name: row.name,
+    price: parseInt(row.price, 10) || 0,
+    sub_text: row.sub_text || '',
+    featured: row.featured === 'true',
+    CTA: {
+      text: row.cta_label || '',
+      URL: row.cta_url || '/',
+      variant: row.cta_variant || 'primary',
+    },
+    perks: parsePerks(row.perks),
+    additional_perks: parsePerks(row.additional_perks),
+    product: productMap[row.product_name] ?? null,
+    publishedAt: new Date().toISOString(),
+  });
+
+  // Phase 1: Seed EN plans
+  for (const row of enRows) {
+    if (!row.name) continue;
+    const existing = await findExistingWithLocale('plans', 'name', row.name, 'en');
+    if (existing) {
+      map[row.name] = existing.documentId;
+      log.skip(`Đã tồn tại: ${row.name} [en] (docId:${existing.documentId})`);
+      continue;
     }
-    const created = await post('plans', {
-      name: row.name,
-      price: parseInt(row.price, 10) || 0,
-      sub_text: row.sub_text || '',
-      featured: row.featured === 'true',
-      locale: row.locale || DEFAULT_LOCALE,
-      CTA: {
-        text: row.cta_label || '',
-        URL: row.cta_url || '/',
-        variant: row.cta_variant || 'primary',
-      },
-      perks: parsePerks(row.perks),
-      additional_perks: parsePerks(row.additional_perks),
-      product: productId ?? null,
-      publishedAt: new Date().toISOString(),
-    });
+    const created = await post('plans', buildPlanPayload(row));
     if (created) {
-      map[row.name] = created.id;
-      log.ok(created.id, `${row.name} (plan of: ${row.product_name})`);
+      map[row.name] = created.documentId;
+      log.ok(created.id, `${row.name} [en] (of: ${row.product_name})`);
     }
   }
+
+  // Phase 2: Seed VI plans as localization variants
+  for (const row of viRows) {
+    if (!row.name) continue;
+    const docId = map[row.name];
+    if (!docId) {
+      log.skip(`Không tìm thấy EN plan cho: ${row.name} [vi]`);
+      continue;
+    }
+    const viExisting = await findExistingWithLocale('plans', 'name', row.name, 'vi');
+    if (viExisting) {
+      log.skip(`Đã tồn tại: ${row.name} [vi]`);
+      continue;
+    }
+    const result = await putDoc('plans', docId, buildPlanPayload(row), 'vi');
+    if (result) log.ok(result.id, `${row.name} [vi] localized`);
+  }
+
   return map;
 };
 
@@ -563,7 +698,7 @@ const seedFaqs = async () => {
     }
     const existing = await findExisting('faqs', 'question', row.question);
     if (existing) {
-      map[row.question] = existing.id;
+      map[`${row.locale || DEFAULT_LOCALE}:${row.question}`] = existing.documentId;
       log.skip(`Đã tồn tại: ${row.question.slice(0, 40)}...`);
       continue;
     }
@@ -573,7 +708,7 @@ const seedFaqs = async () => {
       locale: row.locale || DEFAULT_LOCALE,
     });
     if (created) {
-      map[row.question] = created.id;
+      map[`${row.locale || DEFAULT_LOCALE}:${row.question}`] = created.documentId;
       log.ok(created.id, row.question.slice(0, 60));
     }
   }
@@ -591,7 +726,7 @@ const seedTestimonials = async () => {
     }
     const existing = await findExisting('testimonials', 'text', row.text);
     if (existing) {
-      map[row.user_name] = existing.id;
+      map[`${existing.locale || row.locale || DEFAULT_LOCALE}:${row.user_name}`] = existing.documentId;
       log.skip(`Đã tồn tại: ${row.user_name}`);
       continue;
     }
@@ -620,7 +755,7 @@ const seedTestimonials = async () => {
       publishedAt: new Date().toISOString(),
     });
     if (created) {
-      map[row.user_name] = created.id;
+      map[`${row.locale || DEFAULT_LOCALE}:${row.user_name}`] = created.documentId;
       log.ok(created.id, row.user_name || '(no name)');
     }
   }
@@ -641,7 +776,7 @@ const seedArticles = async (categoryMap) => {
     const slug = row.slug || row.title.toLowerCase().replace(/\s+/g, '-');
     const existing = await findExisting('articles', 'slug', slug);
     if (existing) {
-      map[row.title] = existing.id;
+      map[row.title] = existing.documentId;
       log.skip(`Đã tồn tại: ${row.title}`);
       continue;
     }
@@ -683,7 +818,7 @@ const seedArticles = async (categoryMap) => {
 
     const created = await post('articles', payload);
     if (created) {
-      map[row.title] = created.id;
+      map[row.title] = created.documentId;
       log.ok(created.id, row.title);
     }
   }
@@ -692,31 +827,75 @@ const seedArticles = async (categoryMap) => {
 
 // ─── SINGLE TYPE SEEDERS ──────────────────────────────────────────────────────
 
+/**
+ * Seed một Single Type cho cả 2 locales (en + vi).
+ * File naming convention:
+ *   - EN: single-types/{name}.json       (default locale)
+ *   - VI: single-types/{name}.vi.json    (optional)
+ */
+const seedSingleTypeBilingual = async (apiName, fileName) => {
+  // Seed EN (default locale)
+  const enData = readJson(`single-types/${fileName}.json`);
+  if (enData) {
+    const result = await put(apiName, enData);
+    if (result) log.ok(result.id || 'OK', `${apiName} [en] updated`);
+  }
+
+  // Seed VI locale
+  const viData = readJson(`single-types/${fileName}.vi.json`);
+  if (viData) {
+    const result = await put(apiName, viData, 'vi');
+    if (result) log.ok(result.id || 'OK', `${apiName} [vi] updated`);
+  }
+};
+
 const seedGlobal = async () => {
   log.info('Seeding Global (Navbar + Footer)...');
-  const data = readJson('single-types/global.json');
-  if (!data) return;
-  const result = await put('global', data);
-  if (result) log.ok(result.id || 'OK', 'Global config updated');
+  await seedSingleTypeBilingual('global', 'global');
 };
 
 const seedBlogPage = async () => {
   log.info('Seeding Blog Page...');
-  const data = readJson('single-types/blog-page.json');
-  if (!data) return;
-  const result = await put('blog-page', data);
-  if (result) log.ok(result.id || 'OK', 'Blog page updated');
+  await seedSingleTypeBilingual('blog-page', 'blog-page');
 };
 
 const seedProductPage = async () => {
   log.info('Seeding Product Page...');
-  const data = readJson('single-types/product-page.json');
-  if (!data) return;
-  const result = await put('product-page', data);
-  if (result) log.ok(result.id || 'OK', 'Product page updated');
+  await seedSingleTypeBilingual('product-page', 'product-page');
 };
 
 // ─── PAGE + DYNAMIC ZONE SEEDER ──────────────────────────────────────────────
+
+/**
+ * Inject relation IDs vào dynamic zones dựa trên locale.
+ * Maps keys format: "locale:name" → documentId
+ * planMap keys format: "name" → documentId (shared across locales)
+ */
+const injectDynamicZoneRefs = (pageData, planMap, testimonialMap, faqMap, locale = 'en') => {
+  if (!pageData.dynamic_zone) return;
+
+  // Helper: lọc map values theo locale prefix
+  const filterByLocale = (map, loc) =>
+    Object.entries(map)
+      .filter(([key]) => key.startsWith(`${loc}:`))
+      .map(([, val]) => val);
+
+  for (const zone of pageData.dynamic_zone) {
+    if (zone._plans_ref === 'INJECT_PLAN_IDS') {
+      // Plans share documentId across locales → dùng tất cả
+      zone.plans = Object.values(planMap);
+      delete zone._plans_ref;
+    }
+    if (zone._testimonials_ref === 'INJECT_TESTIMONIAL_IDS') {
+      zone.testimonials = filterByLocale(testimonialMap, locale);
+      delete zone._testimonials_ref;
+    }
+    if (zone._faqs_ref === 'INJECT_FAQ_IDS') {
+      zone.faqs = filterByLocale(faqMap, locale);
+      delete zone._faqs_ref;
+    }
+  }
+};
 
 const seedPages = async (planMap, testimonialMap, faqMap) => {
   log.info('Seeding Pages (with Dynamic Zones)...');
@@ -727,8 +906,14 @@ const seedPages = async (planMap, testimonialMap, faqMap) => {
     return;
   }
 
-  const files = fs.readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
-  for (const file of files) {
+  const allFiles = fs.readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
+
+  // Tách EN files (không có .vi.) và VI files (.vi.json)
+  const enFiles = allFiles.filter((f) => !f.includes('.vi.'));
+  const viFiles = allFiles.filter((f) => f.includes('.vi.'));
+
+  // Seed EN pages trước (default locale)
+  for (const file of enFiles) {
     const pageData = JSON.parse(
       fs.readFileSync(path.join(pagesDir, file), 'utf-8')
     );
@@ -740,36 +925,54 @@ const seedPages = async (planMap, testimonialMap, faqMap) => {
 
     const existing = await findExisting('pages', 'slug', slug);
     if (existing) {
-      log.skip(`Page "${slug}" đã tồn tại (ID:${existing.id})`);
+      log.skip(`Page "${slug}" [en] đã tồn tại (ID:${existing.id})`);
       continue;
     }
 
-    // Inject relation IDs vào dynamic_zone
-    if (pageData.dynamic_zone) {
-      for (const zone of pageData.dynamic_zone) {
-        if (zone._plans_ref === 'INJECT_PLAN_IDS') {
-          zone.plans = Object.values(planMap);
-          delete zone._plans_ref;
-        }
-        if (zone._testimonials_ref === 'INJECT_TESTIMONIAL_IDS') {
-          zone.testimonials = Object.values(testimonialMap);
-          delete zone._testimonials_ref;
-        }
-        if (zone._faqs_ref === 'INJECT_FAQ_IDS') {
-          zone.faqs = Object.values(faqMap);
-          delete zone._faqs_ref;
-        }
-      }
-    }
-
-    // Remove comment fields
+    injectDynamicZoneRefs(pageData, planMap, testimonialMap, faqMap, 'en');
     delete pageData._comment;
 
     const created = await post('pages', {
       ...pageData,
       publishedAt: new Date().toISOString(),
     });
-    if (created) log.ok(created.id, `Page: ${slug}`);
+    if (created) log.ok(created.id, `Page: ${slug} [en]`);
+  }
+
+  // Seed VI pages — localization variants (dùng PUT lên cùng documentId)
+  for (const file of viFiles) {
+    const pageData = JSON.parse(
+      fs.readFileSync(path.join(pagesDir, file), 'utf-8')
+    );
+    const slug = pageData.slug;
+    if (!slug) {
+      log.skip(`File ${file} không có slug`);
+      continue;
+    }
+
+    // Tìm EN page đã tạo để lấy documentId
+    const enPage = await findExisting('pages', 'slug', slug);
+    if (!enPage) {
+      log.skip(`EN Page "${slug}" chưa tồn tại — bỏ qua VI`);
+      continue;
+    }
+
+    // Kiểm tra VI đã tồn tại chưa
+    const viPage = await findExistingWithLocale('pages', 'slug', slug, 'vi');
+    if (viPage) {
+      log.skip(`Page "${slug}" [vi] đã tồn tại`);
+      continue;
+    }
+
+    injectDynamicZoneRefs(pageData, planMap, testimonialMap, faqMap, 'vi');
+    delete pageData._comment;
+    delete pageData.locale;
+
+    const result = await putDoc('pages', enPage.documentId, {
+      ...pageData,
+      publishedAt: new Date().toISOString(),
+    }, 'vi');
+    if (result) log.ok(result.id, `Page: ${slug} [vi] localized`);
   }
 };
 
@@ -791,6 +994,31 @@ const cleanAllData = async () => {
   for (const ep of endpoints) {
     await cleanEndpoint(ep);
   }
+
+  // Xóa toàn bộ Media Library files
+  if (!FLAG_DRY_RUN) {
+    try {
+      const mediaRes = await fetch(
+        `${STRAPI_URL}/api/upload/files?pagination[pageSize]=200`,
+        { headers: { Authorization: `Bearer ${API_TOKEN}` } }
+      );
+      if (mediaRes.ok) {
+        const mediaFiles = await mediaRes.json();
+        if (mediaFiles.length > 0) {
+          for (const file of mediaFiles) {
+            await fetch(`${STRAPI_URL}/api/upload/files/${file.id}`, {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            });
+          }
+          log.clean('media-files', mediaFiles.length);
+        }
+      }
+    } catch {
+      /* silent — media cleanup is best-effort */
+    }
+  }
+
   console.log('  ✅ Cleanup hoàn tất.\n');
 };
 

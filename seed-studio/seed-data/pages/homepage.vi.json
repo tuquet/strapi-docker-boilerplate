@@ -1,0 +1,99 @@
+{
+  "_comment": "Homepage VI — dynamic_zone relations will be injected by seeder.",
+  "slug": "homepage",
+  "locale": "vi",
+  "seo": {
+    "metaTitle": "Nhà Atelier — Xưởng xăm hình nghệ thuật tại Hà Nội",
+    "metaDescription": "Nhà Atelier Tattoo Studio — Xưởng xăm hình nghệ thuật tại Hà Nội. Chuyên Blackwork, Fineline, Abstract, Custom Design. Walk-ins welcome."
+  },
+  "dynamic_zone": [
+    {
+      "__component": "dynamic-zone.hero",
+      "heading": "Extraordinary tattoo studio",
+      "sub_heading": "Nơi mỗi hình xăm là một câu chuyện. Thiết kế riêng, tận tâm từng chi tiết, an toàn tuyệt đối. Walk-ins welcome.",
+      "CTAs": [
+        { "text": "Đặt lịch ngay", "URL": "/dat-lich", "variant": "primary" },
+        { "text": "Xem Gallery", "URL": "/products", "variant": "outline" }
+      ]
+    },
+    {
+      "__component": "dynamic-zone.features",
+      "heading": "Tại sao chọn Nhà Atelier?",
+      "sub_heading": "Xưởng nghệ thuật xăm hình — nơi sáng tạo và an toàn song hành.",
+      "globe_card": {
+        "title": "Đa dạng phong cách",
+        "description": "Từ Fineline tinh tế đến Blackwork mạnh mẽ, từ Abstract nghệ thuật đến Oriental cổ điển — chúng tôi biến mọi ý tưởng thành hiện thực.",
+        "span": "two"
+      },
+      "ray_card": {
+        "title": "An toàn tuyệt đối",
+        "description": "100% thiết bị khử trùng, mực tattoo nhập khẩu chính hãng, quy trình vệ sinh nghiêm ngặt theo tiêu chuẩn y tế.",
+        "before_ray_items": { "item_1": "100%", "item_2": "Vệ sinh", "item_3": "Đạt chuẩn" },
+        "after_ray_items": { "item_1": "100%", "item_2": "An toàn", "item_3": "Cam kết" },
+        "span": "one"
+      },
+      "graph_card": {
+        "title": "Kinh nghiệm & Uy tín",
+        "description": "Với hàng trăm tác phẩm hoàn thành và cộng đồng yêu thích nghệ thuật xăm hình tin tưởng.",
+        "top_items": [
+          { "number": "350+", "text": "Tác phẩm" },
+          { "number": "11K+", "text": "Followers" },
+          { "number": "2", "text": "Cơ sở" }
+        ],
+        "highlighted_text": "Chất lượng là ưu tiên #1",
+        "span": "one"
+      },
+      "social_media_card": {
+        "Title": "Theo dõi Nhà Atelier",
+        "Description": "Cập nhật tác phẩm mới nhất trên Facebook và Instagram @nhaatelier.",
+        "span": "two"
+      }
+    },
+    {
+      "__component": "dynamic-zone.how-it-works",
+      "heading": "Quy trình 3 bước đơn giản",
+      "sub_heading": "Từ ý tưởng đến tác phẩm — chúng tôi đồng hành cùng bạn.",
+      "steps": [
+        {
+          "title": "Tư vấn & Thiết kế",
+          "description": "Chia sẻ ý tưởng của bạn — artist sẽ phác thảo thiết kế riêng, chỉnh sửa đến khi bạn hoàn toàn hài lòng."
+        },
+        {
+          "title": "Duyệt & Đặt lịch",
+          "description": "Xác nhận thiết kế cuối cùng và chọn ngày xăm phù hợp. Walk-ins cũng luôn được chào đón!"
+        },
+        {
+          "title": "Thực hiện & Chăm sóc",
+          "description": "Xăm hình trong không gian ấm cúng như ở nhà, kèm hướng dẫn aftercare chi tiết và hỗ trợ touch-up."
+        }
+      ]
+    },
+    {
+      "__component": "dynamic-zone.pricing",
+      "heading": "Bảng giá dịch vụ",
+      "sub_heading": "Minh bạch và rõ ràng. Giá bao gồm thiết kế và hướng dẫn chăm sóc.",
+      "_plans_ref": "INJECT_PLAN_IDS"
+    },
+    {
+      "__component": "dynamic-zone.testimonials",
+      "heading": "Khách hàng nói gì về Nhà Atelier",
+      "sub_heading": "Những trải nghiệm thực tế từ cộng đồng yêu nghệ thuật xăm hình.",
+      "_testimonials_ref": "INJECT_TESTIMONIAL_IDS"
+    },
+    {
+      "__component": "dynamic-zone.faq",
+      "heading": "Câu hỏi thường gặp",
+      "sub_heading": "Bạn có thắc mắc? Nhắn tin cho chúng tôi qua Facebook hoặc Instagram.",
+      "_faqs_ref": "INJECT_FAQ_IDS"
+    },
+    {
+      "__component": "dynamic-zone.cta",
+      "heading": "Sẵn sàng sở hữu tác phẩm nghệ thuật trên da?",
+      "sub_heading": "Liên hệ Nhà Atelier ngay để được tư vấn miễn phí và đặt lịch xăm.",
+      "CTAs": [
+        { "text": "Đặt lịch ngay", "URL": "/dat-lich", "variant": "primary" },
+        { "text": "Nhắn tin tư vấn", "URL": "https://www.instagram.com/nhaatelier", "variant": "outline" }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
+import { themeConfig } from '@/lib/theme.config';
+import { cn } from '@/lib/utils';
 import { Cover } from '../decorations/cover';
 import ShootingStars from '../decorations/shooting-star';
 import StarBackground from '../decorations/star-background';
@@ -29,16 +31,23 @@ export const Hero = ({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <StarBackground />
-        <ShootingStars />
+        {themeConfig.effects.starBackground && <StarBackground />}
+        {themeConfig.effects.shootingStars && <ShootingStars />}
       </motion.div>
       <Heading
         as="h1"
-        className="text-4xl md:text-4xl lg:text-8xl font-semibold max-w-7xl mx-auto text-center mt-6 relative z-10  py-6"
+        className={cn(
+          "text-4xl md:text-6xl lg:text-8xl max-w-7xl mx-auto text-center mt-6 relative z-10 py-6",
+          themeConfig.titleFontClass,
+          themeConfig.hero.enableTitleGlow ? "text-white bg-none !bg-clip-border !text-white" : ""
+        )}
+        {...(themeConfig.hero.enableTitleGlow
+          ? { style: { textShadow: themeConfig.hero.titleGlowStyle } }
+          : {})}
       >
         {heading}
       </Heading>
-      <Subheading className="text-center mt-2 md:mt-6 text-base md:text-xl text-muted  max-w-3xl mx-auto relative z-10">
+      <Subheading className="text-center mt-2 md:mt-6 text-base md:text-xl text-muted max-w-3xl mx-auto relative z-10">
         {sub_heading}
       </Subheading>
       <div className="flex space-x-2 items-center mt-8">

@@ -12,6 +12,24 @@
       "icon": { "id": "rocket", "color": "terminal.ansiYellow" }
     },
     {
+      "label": "[Dev] Only Strapi",
+      "detail": "Khởi chạy chỉ Strapi Backend (cổng 1337)",
+      "type": "shell",
+      "command": "yarn strapi",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": [],
+      "icon": { "id": "server", "color": "terminal.ansiGreen" }
+    },
+    {
+      "label": "[Dev] Only Next.js",
+      "detail": "Khởi chạy chỉ Next.js Frontend (cổng 3000)",
+      "type": "shell",
+      "command": "cd next && yarn dev",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": [],
+      "icon": { "id": "globe", "color": "terminal.ansiBlue" }
+    },
+    {
       "label": "[Dev] Clean Workspace",
       "detail": "Dọn dẹp cache Next.js, build Strapi và kill port bị treo",
       "type": "shell",
@@ -28,6 +46,15 @@
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": [],
       "icon": { "id": "code", "color": "terminal.ansiCyan" }
+    },
+    {
+      "label": "[Dev] Docs",
+      "detail": "Khởi chạy tài liệu dự án (cổng 5173)",
+      "type": "shell",
+      "command": "yarn docs:dev",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": [],
+      "icon": { "id": "book", "color": "terminal.ansiCyan" }
     },
     {
       "label": "[Docker] Local DB Up",

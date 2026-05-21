@@ -1,20 +1,20 @@
 {
   "slug": "pricing",
   "seo": {
-    "metaTitle": "Pricing — LaunchPad CMS",
-    "metaDescription": "Choose the right plan for your business with our flexible pricing options tailored for scaling teams."
+    "metaTitle": "Pricing — Nhà Atelier Tattoo Studio",
+    "metaDescription": "Tattoo service pricing at Nhà Atelier. Transparent and clear. Price includes design and aftercare guidance."
   },
   "dynamic_zone": [
     {
       "__component": "dynamic-zone.pricing",
-      "heading": "Simple, transparent pricing",
-      "sub_heading": "No hidden fees. No surprises. Pick the plan that fits your team.",
+      "heading": "Service Pricing",
+      "sub_heading": "Transparent and clear. Price includes design and aftercare guidance.",
       "_plans_ref": "INJECT_PLAN_IDS"
     },
     {
       "__component": "dynamic-zone.faq",
-      "heading": "Frequently asked questions",
-      "sub_heading": "Can't find the answer you're looking for? Reach out to our support team.",
+      "heading": "Frequently Asked Questions",
+      "sub_heading": "Have questions? Message us on Facebook or Instagram.",
       "_faqs_ref": "INJECT_FAQ_IDS"
     }
   ]
