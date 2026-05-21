@@ -852,6 +852,25 @@ const seedSingleTypeBilingual = async (apiName, fileName) => {
 const seedGlobal = async () => {
   log.info('Seeding Global (Navbar + Footer)...');
   await seedSingleTypeBilingual('global', 'global');
+
+  // Connect logo relation to navbar + footer
+  log.info('Connecting Logo relation to Global (Navbar + Footer)...');
+  const logo = await findExisting('logos', 'company', 'Nhà Atelier');
+  if (logo) {
+    const logoDocId = logo.documentId;
+    const connectData = {
+      navbar: {
+        logo: { connect: [{ documentId: logoDocId }] },
+      },
+      footer: {
+        logo: { connect: [{ documentId: logoDocId }] },
+      },
+    };
+    const result = await put('global', connectData);
+    if (result) log.ok(result.id || 'OK', `Logo connected: ${logoDocId}`);
+  } else {
+    log.skip('No Logo "Nhà Atelier" found — skipping logo connection');
+  }
 };
 
 const seedBlogPage = async () => {

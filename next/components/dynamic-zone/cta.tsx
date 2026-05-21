@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
+import { isExternalUrl, localeHref } from '@/lib/locale-href';
+
 import { Container } from '../container';
 import { AmbientColor } from '../decorations/ambient-color';
 import { Button } from '../elements/button';
@@ -35,11 +37,12 @@ export const CTA = ({
           {CTAs &&
             CTAs.map((cta, index) => (
               <Button
-                as={Link}
+                as={isExternalUrl(cta.URL) ? 'a' : Link}
                 key={index}
-                href={`/${locale}${cta.URL}`}
+                href={localeHref(cta.URL, locale)}
                 variant={cta.variant}
                 className="py-3"
+                {...(isExternalUrl(cta.URL) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 {cta.text}
               </Button>

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import React from 'react';
 
+import { isExternalUrl, localeHref } from '@/lib/locale-href';
+
 import { themeConfig } from '@/lib/theme.config';
 import { cn } from '@/lib/utils';
 import { Cover } from '../decorations/cover';
@@ -55,9 +57,10 @@ export const Hero = ({
           CTAs.map((cta) => (
             <Button
               key={cta?.id}
-              as={Link}
-              href={`/${locale}${cta.URL}`}
+              as={isExternalUrl(cta.URL) ? 'a' : Link}
+              href={localeHref(cta.URL, locale)}
               {...(cta.variant ? { variant: cta.variant } : {})}
+              {...(isExternalUrl(cta.URL) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
               {cta.text}
             </Button>
